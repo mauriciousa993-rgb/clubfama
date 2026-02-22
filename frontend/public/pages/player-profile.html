@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil Completo - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/players.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-section h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 10px;
+        }
+
+        .photo-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #1e40af;
+            margin-bottom: 15px;
+        }
+
+        .photo-upload {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-save {
+            background: #1e40af;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn-save:hover {
+            background: #1e3a8a;
+        }
+
+        .readonly-field {
+            background: #f5f5f5;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="player-dashboard.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Mis Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="player-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="player-calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+            </ul>
+
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Jugador</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-user-edit"></i> Mi Perfil Completo</h1>
+                <div class="date" id="currentDate"></div>
+            </header>
+
+            <form id="profileForm" class="profile-form">
+                <!-- Foto de Perfil -->
+                <div class="form-section photo-upload">
+                    <h3><i class="fas fa-camera"></i> Foto de Perfil</h3>
+                    <img id="photoPreview" src="" alt="Foto de perfil" class="photo-preview" style="display: none;">
+                    <div id="noPhoto" class="photo-preview" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                        <i class="fas fa-user" style="font-size: 60px; color: #ccc;"></i>
+                    </div>
+                    <input type="file" id="photo" name="photo" accept="image/*" style="display: none;">
+                    <button type="button" onclick="document.getElementById('photo').click()" class="btn btn-secondary">
+                        <i class="fas fa-upload"></i> Subir Foto
+                    </button>
+                </div>
+
+                <!-- Información Básica -->
+                <div class="form-section">
+                    <h3><i class="fas fa-id-card"></i> Información Personal</h3>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría del Equipo</label>
+                        <select id="team_category" name="team_category" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="mini">Mini</option>
+                            <option value="juvenil">Juvenil</option>
+                            <option value="elite">Elite</option>
+
+                        </select>
+                    </div>
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label>Tipo de Documento</label>
+                            <select id="document_type" name="document_type">
+                                <option value="">Seleccionar</option>
+                                <option value="cedula">Cédula de Ciudadanía</option>
+                                <option value="tarjeta_identidad">Tarjeta de Identidad</option>
+                                <option value="pasaporte">Pasaporte</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Documento</label>
+                            <input type="text" id="document_number" name="document_number">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha de Nacimiento</label>
+                            <input type="date" id="birth_date" name="birth_date">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección de Casa</label>
+                        <textarea id="address" name="address" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Información Médica -->
+                <div class="form-section">
+                    <h3><i class="fas fa-heartbeat"></i> Información Médica</h3>
+                    <div class="form-group">
+                        <label>Historial Médico</label>
+                        <textarea id="medical_history" name="medical_history" rows="3" placeholder="Antecedentes médicos relevantes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Alergias</label>
+                        <textarea id="allergies" name="allergies" rows="2" placeholder="Alergias conocidas..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Enfermedades o Condiciones</label>
+                        <textarea id="diseases" name="diseases" rows="2" placeholder="Enfermedades crónicas, condiciones especiales..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Contacto de Emergencia</label>
+                        <input type="text" id="emergency_name" placeholder="Nombre" style="margin-bottom: 5px;">
+                        <input type="tel" id="emergency_phone" placeholder="Teléfono" style="margin-bottom: 5px;">
+                        <input type="text" id="emergency_relationship" placeholder="Parentesco">
+                    </div>
+                </div>
+
+                <!-- Información del Padre -->
+                <div class="form-section">
+                    <h3><i class="fas fa-male"></i> Información del Padre</h3>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="father_name" name="father_name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="father_phone" name="father_phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Ocupación</label>
+                            <input type="text" id="father_occupation" name="father_occupation">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de la Madre -->
+                <div class="form-section">
+                    <h3><i class="fas fa-female"></i> Información de la Madre</h3>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="mother_name" name="mother_name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="tel" id="mother_phone" name="mother_phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Ocupación</label>
+                            <input type="text" id="mother_occupation" name="mother_occupation">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Académica -->
+                <div class="form-section">
+                    <h3><i class="fas fa-graduation-cap"></i> Información Académica</h3>
+                    <div class="form-group">
+                        <label>Nivel Educativo</label>
+                        <select id="education_level" name="education_level">
+                            <option value="">Seleccionar</option>
+                            <option value="primaria">Primaria</option>
+                            <option value="secundaria">Secundaria</option>
+                            <option value="tecnico">Técnico/Tecnólogo</option>
+                            <option value="universitario">Universitario</option>
+                            <option value="profesional">Profesional</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Institución Educativa</label>
+                        <input type="text" id="institution" name="institution" placeholder="Nombre del colegio, universidad...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Grado/Carrera</label>
+                            <input type="text" id="career_grade" name="career_grade" placeholder="Ej: 10°, Ingeniería, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Semestre/Año</label>
+                            <input type="text" id="semester" name="semester" placeholder="Ej: 3er semestre, 2024">
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="button" onclick="saveProfile()" class="btn-save">
+                    <i class="fas fa-save"></i> Guardar Mi Perfil
+                </button>
+            </div>
+
+            <div id="message" class="message" style="margin-top: 20px;"></div>
+        </main>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+
+        // Cargar datos del perfil
+        async function loadProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('userName').textContent = user.name || 'Jugador';
+                    
+                    // Llenar formulario
+                    document.getElementById('name').value = user.name || '';
+                    document.getElementById('team_category').value = user.team_category || '';
+                    document.getElementById('document_type').value = user.document_type || '';
+                    document.getElementById('document_number').value = user.document_number || '';
+
+                    document.getElementById('birth_date').value = user.birth_date ? user.birth_date.split('T')[0] : '';
+                    document.getElementById('phone').value = user.phone || '';
+                    document.getElementById('address').value = user.address || '';
+                    document.getElementById('medical_history').value = user.medical_history || '';
+                    document.getElementById('allergies').value = user.allergies || '';
+                    document.getElementById('diseases').value = user.diseases || '';
+                    
+                    if (user.emergency_contact) {
+                        document.getElementById('emergency_name').value = user.emergency_contact.name || '';
+                        document.getElementById('emergency_phone').value = user.emergency_contact.phone || '';
+                        document.getElementById('emergency_relationship').value = user.emergency_contact.relationship || '';
+                    }
+                    
+                    document.getElementById('father_name').value = user.father_name || '';
+                    document.getElementById('father_phone').value = user.father_phone || '';
+                    document.getElementById('father_occupation').value = user.father_occupation || '';
+                    document.getElementById('mother_name').value = user.mother_name || '';
+                    document.getElementById('mother_phone').value = user.mother_phone || '';
+                    document.getElementById('mother_occupation').value = user.mother_occupation || '';
+                    document.getElementById('education_level').value = user.education_level || '';
+                    document.getElementById('institution').value = user.institution || '';
+                    document.getElementById('career_grade').value = user.career_grade || '';
+                    document.getElementById('semester').value = user.semester || '';
+                    
+                    // Mostrar foto si existe
+                    if (user.photo_url) {
+                        document.getElementById('photoPreview').src = user.photo_url;
+                        document.getElementById('photoPreview').style.display = 'block';
+                        document.getElementById('noPhoto').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando perfil:', error);
+            }
+        }
+
+        // Guardar perfil
+        async function saveProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                const profileData = {
+                    name: document.getElementById('name').value,
+                    team_category: document.getElementById('team_category').value,
+                    document_type: document.getElementById('document_type').value,
+
+                    document_number: document.getElementById('document_number').value,
+                    birth_date: document.getElementById('birth_date').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    medical_history: document.getElementById('medical_history').value,
+                    allergies: document.getElementById('allergies').value,
+                    diseases: document.getElementById('diseases').value,
+                    emergency_contact: {
+                        name: document.getElementById('emergency_name').value,
+                        phone: document.getElementById('emergency_phone').value,
+                        relationship: document.getElementById('emergency_relationship').value
+                    },
+                    father_name: document.getElementById('father_name').value,
+                    father_phone: document.getElementById('father_phone').value,
+                    father_occupation: document.getElementById('father_occupation').value,
+                    mother_name: document.getElementById('mother_name').value,
+                    mother_phone: document.getElementById('mother_phone').value,
+                    mother_occupation: document.getElementById('mother_occupation').value,
+                    education_level: document.getElementById('education_level').value,
+                    institution: document.getElementById('institution').value,
+                    career_grade: document.getElementById('career_grade').value,
+                    semester: document.getElementById('semester').value
+                };
+
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Perfil actualizado correctamente. Redirigiendo...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'player-dashboard.html';
+                    }, 2000);
+                } else {
+                    showMessage(data.message || 'Error al actualizar perfil', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error guardando perfil:', error);
+                showMessage('Error al guardar el perfil', 'error');
+            }
+        }
+
+        // Mostrar mensaje
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Subir foto a Cloudinary
+        async function uploadPhoto(file) {
+            try {
+                const token = localStorage.getItem('token');
+                const formData = new FormData();
+                formData.append('photo', file);
+
+                const response = await fetch(`${API_URL}/auth/upload-photo`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Mostrar la foto subida
+                    document.getElementById('photoPreview').src = data.photo_url;
+                    document.getElementById('photoPreview').style.display = 'block';
+                    document.getElementById('noPhoto').style.display = 'none';
+                    showMessage('Foto subida correctamente', 'success');
+                    return data.photo_url;
+                } else {
+                    showMessage(data.message || 'Error al subir la foto', 'error');
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error subiendo foto:', error);
+                showMessage('Error al subir la foto', 'error');
+                return null;
+            }
+        }
+
+        // Preview y subida de foto
+        document.getElementById('photo').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Mostrar preview local inmediatamente
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photoPreview').src = e.target.result;
+                    document.getElementById('photoPreview').style.display = 'block';
+                    document.getElementById('noPhoto').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                
+                // Subir foto al servidor
+                await uploadPhoto(file);
+            }
+        });
+
+
+        // Fecha actual
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Cargar perfil al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileMenu();
+            loadProfile();
+        });
+
+    </script>
+</body>
+</html>

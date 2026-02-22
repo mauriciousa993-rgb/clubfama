@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/calendar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="players.html">
+                        <i class="fas fa-users"></i>
+                        <span>Jugadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payments.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Informes</span>
+                    </a>
+                </li>
+            </ul>
+
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-calendar-alt"></i> Calendario del Club</h1>
+                <button onclick="showAddEventModal()" class="btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Evento
+                </button>
+            </header>
+
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button onclick="previousMonth()" class="btn-nav">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2 id="currentMonth">Febrero 2025</h2>
+                    <button onclick="nextMonth()" class="btn-nav">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="day-header">Dom</div>
+                    <div class="day-header">Lun</div>
+                    <div class="day-header">Mar</div>
+                    <div class="day-header">Mié</div>
+                    <div class="day-header">Jue</div>
+                    <div class="day-header">Vie</div>
+                    <div class="day-header">Sáb</div>
+                    
+                    <div id="calendarDays" class="days-container">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="events-sidebar">
+                <h3><i class="fas fa-list"></i> Eventos del Mes</h3>
+                <div id="monthEvents" class="events-list">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Evento -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEventModal()">&times;</span>
+            <h2 id="eventModalTitle"><i class="fas fa-calendar-plus"></i> Nuevo Evento</h2>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label>Título del evento</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora</label>
+                        <input type="time" id="eventTime">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo de evento</label>
+                        <select id="eventType" required>
+                            <option value="entrenamiento">Entrenamiento</option>
+                            <option value="partido">Partido</option>
+                            <option value="torneo">Torneo</option>
+                            <option value="reunion">Reunión</option>
+                            <option value="evento-social">Evento Social</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="eventCategory">
+                            <option value="todas">Todas las categorías</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="mini">Mini</option>
+                            <option value="juvenil">Juvenil</option>
+                            <option value="elite">Elite</option>
+                        </select>
+                    </div>
+
+                </div>
+                
+                <div class="form-group">
+                    <label>Lugar</label>
+                    <input type="text" id="eventLocation" placeholder="Gimnasio, cancha, etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="eventDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeEventModal()" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/calendar.js"></script>
+</body>
+
+</html>

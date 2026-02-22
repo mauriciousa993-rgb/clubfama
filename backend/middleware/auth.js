@@ -39,4 +39,13 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+// Middleware para verificar si es jugador
+const playerOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'player') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Acceso denegado, solo jugadores' });
+  }
+};
+
+module.exports = { protect, adminOnly, playerOnly };

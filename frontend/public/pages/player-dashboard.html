@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <a href="player-dashboard.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Mis Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="player-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="player-calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+            </ul>
+
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Jugador</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-user"></i> Mi Perfil de Pagos</h1>
+                <div class="date" id="currentDate"></div>
+            </header>
+
+            <!-- Message Container -->
+            <div id="messageContainer"></div>
+
+
+            <!-- Payment Upload Section -->
+            <div class="dashboard-section">
+                <h2><i class="fas fa-upload"></i> Subir Comprobante de Pago</h2>
+                
+                <div class="table-container">
+                    <form id="uploadForm" class="upload-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="amount">Monto ($)</label>
+                                <input type="number" id="amount" name="amount" required min="1" placeholder="Ej: 50000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="month">Mes a Pagar</label>
+                                <select id="month" name="month" required>
+                                    <option value="">Selecciona un mes</option>
+                                    <option value="January">Enero</option>
+                                    <option value="February">Febrero</option>
+                                    <option value="March">Marzo</option>
+                                    <option value="April">Abril</option>
+                                    <option value="May">Mayo</option>
+                                    <option value="June">Junio</option>
+                                    <option value="July">Julio</option>
+                                    <option value="August">Agosto</option>
+                                    <option value="September">Septiembre</option>
+                                    <option value="October">Octubre</option>
+                                    <option value="November">Noviembre</option>
+                                    <option value="December">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="receipt">Comprobante de Pago</label>
+                            <div class="file-upload">
+                                <input type="file" id="receipt" name="receipt" accept="image/*,.pdf" required>
+                                <label for="receipt" class="file-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Arrastra o haz clic para subir</span>
+                                </label>
+                            </div>
+                            <small class="file-info">Formatos: JPG, PNG, PDF (máx. 10MB)</small>
+
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar Comprobante
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Payments Section -->
+            <div class="dashboard-section">
+                <h2><i class="fas fa-history"></i> Mis Pagos</h2>
+                
+                <div class="table-container">
+                    <table id="paymentsTable">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Mes</th>
+                                <th>Monto</th>
+                                <th>Comprobante</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsBody">
+                            <!-- Los pagos se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="noPayments" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <p>No tienes pagos registrados aún</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/player-dashboard.js"></script>
+</body>
+
+</html>

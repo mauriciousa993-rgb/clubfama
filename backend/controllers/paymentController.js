@@ -12,22 +12,57 @@ const uploadPaymentReceipt = async (req, res) => {
       return res.status(400).json({ message: 'Monto y mes son requeridos' });
     }
 
+    // Verificar si hay archivo subido
+    if (!req.file) {
+      return res.status(400).json({ message: 'El comprobante de pago es requerido' });
+    }
+
+    console.log('Archivo recibido:', req.file);
+    console.log('Usuario:', req.user._id);
+    console.log('Monto:', amount);
+    console.log('Mes:', month_covered);
+
+    // Determinar la URL del archivo según el tipo de almacenamiento
+    const isCloudinaryConfigured = 
+      process.env.CLOUDINARY_CLOUD_NAME && 
+      process.env.CLOUDINARY_CLOUD_NAME !== 'your_cloud_name' &&
+      process.env.CLOUDINARY_API_KEY && 
+      process.env.CLOUDINARY_API_KEY !== 'your_api_key' &&
+      process.env.CLOUDINARY_API_SECRET && 
+      process.env.CLOUDINARY_API_SECRET !== 'your_api_secret';
+    
+    let receiptUrl;
+    if (isCloudinaryConfigured) {
+      // Cloudinary devuelve la URL completa en req.file.path
+      receiptUrl = req.file.path;
+    } else {
+      // Almacenamiento local - usar solo el nombre del archivo para construir URL relativa
+      receiptUrl = `/uploads/payments/${req.file.filename}`;
+    }
+
+
     const payment = new Payment({
       player_ref: req.user._id,
       amount: amount,
       month_covered: month_covered,
-      receipt_url: req.file ? req.file.path : null,
+      receipt_url: receiptUrl,
       status: 'pending'
     });
 
+
     const savedPayment = await payment.save();
+    console.log('Pago guardado:', savedPayment);
     
     res.status(201).json(savedPayment);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al subir el comprobante' });
+    console.error('Error detallado al subir comprobante:', error);
+    res.status(500).json({ 
+      message: 'Error al subir el comprobante',
+      error: error.message 
+    });
   }
 };
+
 
 // @desc    Obtener pagos del usuario actual
 // @route   GET /api/payments/my-payments

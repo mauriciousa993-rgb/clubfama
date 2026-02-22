@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informes - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/reports.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="players.html">
+                        <i class="fas fa-users"></i>
+                        <span>Jugadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payments.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="reports.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Informes</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-chart-bar"></i> Informes y Estadísticas</h1>
+                <div class="header-actions">
+                    <button onclick="exportReport()" class="btn-secondary">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                </div>
+            </header>
+
+            <!-- Resumen General -->
+            <div class="reports-summary">
+                <div class="summary-card">
+                    <div class="summary-icon total">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="totalPlayersReport">0</h3>
+                        <p>Total Jugadores</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-icon complete">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="completeProfiles">0</h3>
+                        <p>Perfiles Completos</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-icon incomplete">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="incompleteProfiles">0</h3>
+                        <p>Perfiles Incompletos</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-icon debt">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="playersWithDebt">0</h3>
+                        <p>Con Deuda</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="reports-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>Categoría</label>
+                        <select id="filterCategory" onchange="applyFilters()">
+                            <option value="">Todas</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="mini">Mini</option>
+                            <option value="juvenil">Juvenil</option>
+                            <option value="elite">Elite</option>
+                        </select>
+                    </div>
+
+                    
+                    <div class="filter-group">
+                        <label>Estado del Perfil</label>
+                        <select id="filterProfileStatus" onchange="applyFilters()">
+                            <option value="">Todos</option>
+                            <option value="complete">Completo</option>
+                            <option value="incomplete">Incompleto</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Estado de Deuda</label>
+                        <select id="filterDebtStatus" onchange="applyFilters()">
+                            <option value="">Todos</option>
+                            <option value="withDebt">Con Deuda</option>
+                            <option value="noDebt">Sin Deuda</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Información Médica</label>
+                        <select id="filterMedical" onchange="applyFilters()">
+                            <option value="">Todos</option>
+                            <option value="withAllergies">Con Alergias</option>
+                            <option value="withDiseases">Con Enfermedades</option>
+                            <option value="withMedicalHistory">Con Historial Médico</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="filter-group search-group">
+                        <label>Buscar</label>
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchReport" placeholder="Nombre, email, documento..." onkeyup="applyFilters()">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Edad Mínima</label>
+                        <input type="number" id="filterMinAge" placeholder="Años" onchange="applyFilters()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Edad Máxima</label>
+                        <input type="number" id="filterMaxAge" placeholder="Años" onchange="applyFilters()">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Ordenar por</label>
+                        <select id="sortBy" onchange="applyFilters()">
+                            <option value="name">Nombre</option>
+                            <option value="age">Edad</option>
+                            <option value="category">Categoría</option>
+                            <option value="registration">Fecha Registro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas por Categoría -->
+            <div class="reports-section">
+                <h2><i class="fas fa-chart-pie"></i> Distribución por Categoría</h2>
+                <div class="category-stats" id="categoryStats">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Tabla de Jugadores Filtrada -->
+            <div class="reports-section">
+                <h2><i class="fas fa-list"></i> Listado de Jugadores</h2>
+                <div class="table-container">
+                    <table id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Jugador</th>
+                                <th>Categoría</th>
+                                <th>Edad</th>
+                                <th>Contacto</th>
+                                <th>Perfil</th>
+                                <th>Deuda</th>
+                                <th>Info Médica</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Se llena con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noResults" class="empty-state" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <p>No se encontraron jugadores con los filtros aplicados</p>
+                </div>
+            </div>
+
+            <!-- Reportes Específicos -->
+            <div class="reports-grid">
+                <div class="reports-section">
+                    <h2><i class="fas fa-heartbeat"></i> Información Médica</h2>
+                    <div class="medical-summary" id="medicalSummary">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="reports-section">
+                    <h2><i class="fas fa-graduation-cap"></i> Información Académica</h2>
+                    <div class="education-summary" id="educationSummary">
+                        <!-- Se llena con JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jugadores con Datos Incompletos -->
+            <div class="reports-section alert-section">
+                <h2><i class="fas fa-exclamation-triangle"></i> Jugadores con Información Incompleta</h2>
+                <div class="incomplete-list" id="incompleteList">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal de Detalle -->
+    <div id="reportDetailModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeReportDetailModal()">&times;</span>
+            <h2 id="detailModalTitle"><i class="fas fa-user"></i> Detalle del Jugador</h2>
+            <div id="detailModalContent" class="detail-content">
+                <!-- Se llena con JavaScript -->
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="closeReportDetailModal()" class="btn-secondary">Cerrar</button>
+                <button type="button" onclick="viewPlayerFull()" class="btn-primary">
+                    <i class="fas fa-eye"></i> Ver Perfil Completo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/reports.js"></script>
+</body>
+
+</html>

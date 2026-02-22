@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugadores - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/players.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="players.html">
+                        <i class="fas fa-users"></i>
+                        <span>Jugadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payments.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Informes</span>
+                    </a>
+                </li>
+            </ul>
+
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-users"></i> Gestión de Jugadores</h1>
+                <button onclick="showAddPlayerModal()" class="btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Jugador
+                </button>
+            </header>
+
+            <div class="players-filters">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchPlayer" placeholder="Buscar jugador..." onkeyup="searchPlayers()">
+                </div>
+                <div class="filter-group">
+                    <select id="categoryFilter" onchange="filterPlayers()">
+                        <option value="">Todas las categorías</option>
+                        <option value="femenino">Femenino</option>
+                        <option value="mini">Mini</option>
+                        <option value="juvenil">Juvenil</option>
+                        <option value="elite">Elite</option>
+                    </select>
+
+                    <select id="statusFilter" onchange="filterPlayers()">
+                        <option value="">Todos los estados</option>
+                        <option value="active">Activo</option>
+                        <option value="inactive">Inactivo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="players-grid" id="playersGrid">
+                <!-- Se llena con JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Jugador -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closePlayerModal()">&times;</span>
+            <h2 id="modalTitle"><i class="fas fa-user-plus"></i> Nuevo Jugador</h2>
+            <form id="playerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" id="playerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de nacimiento</label>
+                        <input type="date" id="playerBirthDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="playerCategory" required>
+                            <option value="femenino">Femenino</option>
+                            <option value="mini">Mini</option>
+                            <option value="juvenil">Juvenil</option>
+                            <option value="elite">Elite</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Posición</label>
+                        <select id="playerPosition">
+                            <option value="base">Base</option>
+                            <option value="escolta">Escolta</option>
+                            <option value="alero">Alero</option>
+                            <option value="ala-pivot">Ala-Pívot</option>
+                            <option value="pivot">Pívot</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="playerPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo electrónico (para cuenta de usuario)</label>
+                        <input type="email" id="playerEmail" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contraseña temporal</label>
+                        <input type="text" id="playerPassword" required placeholder="Mínimo 6 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría del equipo</label>
+                        <select id="playerTeamCategory">
+                            <option value="">Seleccionar...</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="mini">Mini</option>
+                            <option value="juvenil">Juvenil</option>
+                            <option value="elite">Elite</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                
+                <div class="form-group">
+                    <label>Foto del jugador</label>
+                    <div class="file-upload">
+                        <input type="file" id="playerPhoto" accept="image/*">
+                        <div class="file-preview" id="photoPreview">
+                            <i class="fas fa-camera"></i>
+                            <span>Click para subir foto</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Información adicional</label>
+                    <textarea id="playerInfo" rows="3" placeholder="Alergias, condiciones médicas, etc."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closePlayerModal()" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Jugador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Ver Jugador (Información Completa) -->
+    <div id="viewPlayerModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeViewPlayerModal()">&times;</span>
+            <h2 id="viewModalTitle"><i class="fas fa-user"></i> Información del Jugador</h2>
+            
+            <div id="viewPlayerContent" class="view-player-content">
+                <!-- Se llena dinámicamente con JavaScript -->
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" onclick="closeViewPlayerModal()" class="btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/players.js"></script>
+</body>
+
+</html>
