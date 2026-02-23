@@ -59,9 +59,11 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     message: 'API Club FAMA VALLE funcionando correctamente',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    deploy: 'Render deploy trigger'
   });
 });
+
 
 // Ruta principal - en producción Vercel maneja el frontend
 app.get('/', (req, res) => {
