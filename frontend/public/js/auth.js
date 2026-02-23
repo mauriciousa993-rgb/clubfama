@@ -5,7 +5,8 @@ const isProduction = window.location.hostname !== 'localhost' &&
                      !window.location.hostname.includes('127.0.0.1');
 
 // URL del backend en Render (producción)
-const RENDER_API_URL = 'https://club-fama-valle.onrender.com/api';
+const RENDER_API_URL = 'https://clubfama.onrender.com/api';
+
 
 
 // URL local para desarrollo
