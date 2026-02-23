@@ -36,9 +36,9 @@ function checkAuth() {
         // Limpiar datos inválidos
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        // Si no estamos en la página de login, redirigir
-        if (!window.location.pathname.includes('index.html') && 
-            !window.location.pathname.endsWith('/')) {
+        // Si no estamos en una página pública, redirigir
+        const publicPaths = ['/index.html', '/pages/register.html'];
+        if (!publicPaths.includes(window.location.pathname)) {
             window.location.href = '../index.html';
         }
         return false;
