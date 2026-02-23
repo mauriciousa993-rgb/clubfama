@@ -7,19 +7,13 @@
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/frontend/public/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/public/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/public/$1"
     }
   ],
+
   "headers": [
     {
       "source": "/(.*)",
