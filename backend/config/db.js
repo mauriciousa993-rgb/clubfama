@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     // Opciones de conexión para MongoDB Atlas
+    // Nota: useNewUrlParser y useUnifiedTopology están deprecados en Node.js Driver 4.0+
+    // y han sido eliminados. Usar mongoose 6+ para evitar estos warnings.
     const connOptions = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       retryWrites: true,
       w: 'majority'
     };
+
+
 
     // Usar MONGODB_URI de variables de entorno (Atlas) o fallback a local
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/club_fama_valle';
@@ -20,15 +22,13 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    console.error('⚠️ El servidor continuará ejecutándose pero sin conexión a la base de datos');
     
-    // En producción, no continuar sin conexión
-    if (process.env.NODE_ENV === 'production') {
-      console.error('🚨 No se puede continuar sin conexión a MongoDB en producción');
-      process.exit(1);
-    } else {
-      console.log('⚠️  Continuando sin conexión a MongoDB (modo desarrollo)...');
-    }
+    // No cerrar el servidor, permitir que responda a requests (aunque fallen)
+    // Esto permite diagnosticar problemas de CORS sin depender de MongoDB
   }
+
 };
 
 module.exports = connectDB;
+module.exports.isConnected = () => mongoose.connection.readyState === 1;
