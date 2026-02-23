@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const mongoose = require('mongoose');
 const path = require('path');
+
 
 // Cargar variables de entorno desde la raíz del proyecto
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -13,30 +15,46 @@ connectDB();
 
 const app = express();
 
-// Configurar CORS para producción
 const allowedOrigins = [
-  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+  'https://clubfama.vercel.app',
   'http://localhost:8080',
-  'https://club-fama-valle.vercel.app', // Frontend en Vercel
-  process.env.FRONTEND_URL // URL del frontend en producción
+  'http://localhost:5500',
+  'http://127.0.0.1:5500'
 ].filter(Boolean);
 
-app.use(cors({
-  origin: function(origin, callback) {
-    // Permitir requests sin origin (como mobile apps o curl)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
-      callback(null, true);
-    } else {
-      console.log('Origin bloqueado:', origin);
-      callback(null, true); // Temporalmente permitir todos en desarrollo
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
     }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS bloqueado para el origen: ${origin}`));
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Middleware adicional para logging
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log(`📡 ${req.method} ${req.url} - Origin: ${origin || 'N/A'}`);
+  next();
+});
+
+
+
+
+
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -59,10 +77,39 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     message: 'API Club FAMA VALLE funcionando correctamente',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    deploy: 'Render deploy trigger'
+    environment: process.env.NODE_ENV || 'development'
   });
 });
+
+// Ruta de prueba simple (GET) - para verificar CORS sin preflight
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    message: 'Test exitoso - Backend respondiendo',
+    origin: req.headers.origin || 'No origin',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Ruta para verificar estado de MongoDB
+app.get('/api/health/db', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const states = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+  
+  res.json({
+    database: 'MongoDB',
+    status: states[dbState] || 'unknown',
+    readyState: dbState,
+    connected: dbState === 1,
+    timestamp: new Date().toISOString()
+  });
+});
+
 
 
 // Ruta principal - en producción Vercel maneja el frontend
@@ -106,4 +153,5 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en modo ${process.env.NODE_ENV || 'development'} en el puerto ${PORT}`);
   console.log(`📡 API disponible en: http://localhost:${PORT}/api`);
+  console.log(`🔄 Deploy actualizado: ${new Date().toISOString()}`);
 });

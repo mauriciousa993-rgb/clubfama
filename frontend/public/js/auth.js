@@ -4,8 +4,9 @@ const isProduction = window.location.hostname !== 'localhost' &&
                      !window.location.hostname.includes('192.168.') &&
                      !window.location.hostname.includes('127.0.0.1');
 
-// URL del backend en Render (cambiar cuando tengas la URL real)
+// URL del backend en Render (producción)
 const RENDER_API_URL = 'https://club-fama-valle.onrender.com/api';
+
 
 // URL local para desarrollo
 const LOCAL_API_URL = 'http://localhost:8080/api';
@@ -18,6 +19,7 @@ console.log('🌐 API URL:', API_URL, '| Modo:', isProduction ? 'Producción' : 
 
 
 // Helper para obtener headers de autenticación
+
 function getAuthHeaders() {
     const token = localStorage.getItem('token');
     return {
@@ -36,9 +38,11 @@ function checkAuth() {
         // Limpiar datos inválidos
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        // Si no estamos en una página pública, redirigir
-        const publicPaths = ['/index.html', '/pages/register.html'];
-        if (!publicPaths.includes(window.location.pathname)) {
+        // Si no estamos en la página de login o registro, redirigir
+        const isLoginPage = window.location.pathname.includes('index.html') ||
+            window.location.pathname.endsWith('/');
+        const isRegisterPage = window.location.pathname.includes('pages/register.html');
+        if (!isLoginPage && !isRegisterPage) {
             window.location.href = '../index.html';
         }
         return false;
