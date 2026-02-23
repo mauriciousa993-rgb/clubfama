@@ -1,6 +1,8 @@
+# Trigger deploy after manual deploy - Render reconnect
 services:
   - type: web
     name: club-fama-valle-api
+
     runtime: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
