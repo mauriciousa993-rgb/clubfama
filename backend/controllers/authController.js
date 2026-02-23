@@ -13,16 +13,51 @@ const generateToken = (id) => {
 // @access  Public
 const register = async (req, res) => {
   try {
+    console.log('🧾 Register hit', {
+      origin: req.headers.origin,
+      host: req.headers.host,
+      path: req.originalUrl,
+      hasBody: Boolean(req.body),
+      keys: req.body ? Object.keys(req.body) : [],
+    });
+
+    // Verificar conexión a MongoDB
+    const mongoose = require('mongoose');
+    console.log('🔍 MongoDB readyState:', mongoose.connection.readyState);
+    if (mongoose.connection.readyState !== 1) {
+      console.error('❌ MongoDB no está conectado. Estado:', mongoose.connection.readyState);
+      return res.status(503).json({ 
+        message: 'Servicio no disponible. Error de conexión a la base de datos. Por favor, contacta al administrador.' 
+      });
+    }
+
     const { name, email, password, role, team_category } = req.body;
+    console.log('🧾 Register payload', {
+      name: name ? '[present]' : '[missing]',
+      email: email ? '[present]' : '[missing]',
+      password: password ? '[present]' : '[missing]',
+      role: role || '[default]',
+      team_category: team_category || '[null]',
+    });
+
+    // Validar campos requeridos
+    if (!name || !email || !password) {
+      console.log('❌ Campos requeridos faltantes');
+      return res.status(400).json({ message: 'Nombre, email y contraseña son requeridos' });
+    }
 
     // Verificar si el usuario ya existe
+    console.log('🔍 Buscando usuario existente...');
     const userExists = await User.findOne({ email });
+    console.log('🧾 Register userExists', { email, exists: Boolean(userExists) });
 
     if (userExists) {
+      console.log('⚠️ Usuario ya existe:', email);
       return res.status(400).json({ message: 'El usuario ya existe' });
     }
 
     // Crear usuario
+    console.log('📝 Creando nuevo usuario...');
     const user = await User.create({
       name,
       email,
@@ -30,8 +65,11 @@ const register = async (req, res) => {
       role: role || 'player',
       team_category: team_category || null,
     });
+    console.log('✅ Usuario creado:', user._id);
 
     if (user) {
+      const token = generateToken(user._id);
+      console.log('🔑 Token generado');
       res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -39,16 +77,22 @@ const register = async (req, res) => {
         role: user.role,
         team_category: user.team_category,
         debt_status: user.debt_status,
-        token: generateToken(user._id),
+        token: token,
       });
     } else {
       res.status(400).json({ message: 'Datos de usuario inválidos' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al registrar usuario' });
+    console.error('❌ ERROR EN REGISTRO:', error);
+    console.error('Stack:', error.stack);
+    res.status(500).json({
+      message: 'Error al registrar usuario',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
+
 
 // @desc    Autenticar usuario y obtener token
 // @route   POST /api/auth/login
