@@ -11,9 +11,12 @@
     {
       "source": "/(.*)",
       "destination": "/frontend/public/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/public/index.html"
     }
   ],
-
   "headers": [
     {
       "source": "/(.*)",
@@ -29,8 +32,22 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     }
   ]
+
 }
