@@ -85,12 +85,16 @@ const register = async (req, res) => {
   } catch (error) {
     console.error('❌ ERROR EN REGISTRO:', error);
     console.error('Stack:', error.stack);
+    // Devolver error completo para diagnóstico (temporal)
     res.status(500).json({
       message: 'Error al registrar usuario',
       error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: error.stack,
+      name: error.name,
+      code: error.code
     });
   }
+
 };
 
 
