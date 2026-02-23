@@ -91,6 +91,22 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Ruta de prueba POST - para diagnosticar si llegan las peticiones POST
+app.post('/api/test-post', (req, res) => {
+  console.log('🧪 Test POST recibido:', {
+    body: req.body,
+    headers: req.headers['content-type'],
+    origin: req.headers.origin
+  });
+  res.json({ 
+    status: 'OK',
+    message: 'Test POST exitoso',
+    receivedBody: req.body,
+    timestamp: new Date().toISOString()
+  });
+});
+
+
 // Ruta para verificar estado de MongoDB
 app.get('/api/health/db', (req, res) => {
   const dbState = mongoose.connection.readyState;
