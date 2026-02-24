@@ -1,63 +1,46 @@
 # Variables de Entorno para Render
 
-Copia y pega estas variables en tu Web Service de Render:
-Settings → Environment → Add Environment Variable
+## Configuración del Servicio
 
-## Variables Obligatorias
-
-| Variable | Valor |
-|----------|-------|
-| `NODE_ENV` | `production` |
-| `PORT` | `8080` |
-| `MONGODB_URI` | `mongodb+srv://clubfama01:clubfama01@clubfama01.gfztvnu.mongodb.net/club_fama_valle?retryWrites=true&w=majority` |
-| `JWT_SECRET` | `club_fama_valle_secret_key_2024_secure_token` |
-| `FRONTEND_URL` | `https://club-fama-valle.vercel.app` |
-
-## Variables Opcionales (Cloudinary)
-
-Si quieres usar Cloudinary en lugar de almacenamiento local:
-
-| Variable | Valor |
-|----------|-------|
-| `CLOUDINARY_CLOUD_NAME` | `tu_cloud_name` |
-| `CLOUDINARY_API_KEY` | `tu_api_key` |
-| `CLOUDINARY_API_SECRET` | `tu_api_secret` |
-
-## Configuración del Build
-
-En tu Web Service de Render, configura:
-
-**Build Command:**
-```bash
+### Build Command
+```
 cd backend && npm install
 ```
 
-**Start Command:**
-```bash
+### Start Command
+```
 cd backend && npm start
 ```
 
-## Configuración de Disco (Para archivos locales)
+## Variables de Entorno Requeridas
 
-Si NO usas Cloudinary, agrega un disco:
+| Variable | Valor | Descripción |
+|----------|-------|-------------|
+| `NODE_ENV` | `production` | Modo producción |
+| `PORT` | `8080` | Puerto del servidor |
+| `MONGODB_URI` | `mongodb+srv://...` | URI de MongoDB Atlas |
+| `JWT_SECRET` | `tu_secreto_jwt` | Clave secreta para tokens |
+| `JWT_EXPIRE` | `1d` | Expiración del token JWT |
+| `CLOUDINARY_CLOUD_NAME` | `tu_cloud_name` | Nombre de Cloudinary |
+| `CLOUDINARY_API_KEY` | `tu_api_key` | API Key de Cloudinary |
+| `CLOUDINARY_API_SECRET` | `tu_api_secret` | API Secret de Cloudinary |
+| `FRONTEND_URL` | `https://tu-frontend.vercel.app` | URL del frontend |
 
-1. Go to **Disks** en tu servicio de Render
-2. Click **Add Disk**
-3. **Name:** `uploads`
-4. **Mount Path:** `/opt/render/project/src/uploads`
-5. **Size:** 1 GB (suficiente para comprobantes)
+## Notas Importantes
 
-## Pasos en Render:
+- **NO se usa Disk**: Todos los archivos (comprobantes de pago) se guardan en Cloudinary
+- **MongoDB Atlas**: La base de datos está en la nube, no local
+- **Cloudinary**: Almacenamiento de imágenes en la nube
 
-1. Crear **New Web Service**
-2. Conectar tu repositorio de GitHub
-3. Configurar **Build Command** y **Start Command** (arriba)
-4. Agregar las **Environment Variables** (tabla de arriba)
-5. (Opcional) Agregar **Disk** para archivos locales
-6. Click **Create Web Service**
+## Configuración MongoDB Atlas
 
-## Después de desplegar:
+1. Ve a [cloud.mongodb.com](https://cloud.mongodb.com)
+2. Network Access → Add IP Address
+3. Selecciona **Allow Access from Anywhere** (0.0.0.0/0)
+4. Esto permite que Render se conecte a tu base de datos
 
-1. Copiar la URL de Render (ej: `https://club-fama-valle.onrender.com`)
-2. Actualizar `FRONTEND_URL` en Vercel si es diferente
-3. Actualizar `RENDER_API_URL` en `frontend/public/js/auth.js`
+## Configuración Cloudinary
+
+1. Ve a [cloudinary.com](https://cloudinary.com)
+2. Dashboard → Copy API Environment Variable
+3. Extrae los valores para las variables de entorno

@@ -41,7 +41,10 @@ club-fama-valle/
 │       ├── js/                # Scripts
 │       ├── pages/             # Páginas HTML
 │       └── images/            # Imágenes
-├── uploads/                   # Archivos subidos (local)
+├── uploads/                   # Archivos subidos (almacenados en Cloudinary)
+
+
+
 ├── .env.example               # Ejemplo de variables de entorno
 ├── .gitignore                 # Archivos ignorados por git
 ├── vercel.json                # Configuración de Vercel
@@ -119,11 +122,13 @@ Abrir `frontend/public/index.html` en el navegador o usar Live Server.
    JWT_SECRET=tu_secreto_jwt_super_seguro
    FRONTEND_URL=https://club-fama-valle.vercel.app
    ```
-6. En "Disks", agregar:
-   - **Name:** `uploads`
-   - **Mount Path:** `/opt/render/project/src/uploads`
-   - **Size:** 1 GB
-7. Deploy!
+6. Deploy!
+
+**Nota:** Los archivos se almacenan en Cloudinary. No se requiere configurar Disk en Render.
+
+
+
+
 
 ### 3. Vercel (Frontend)
 
@@ -198,8 +203,11 @@ Abrir `frontend/public/index.html` en el navegador o usar Live Server.
 - **Solución:** El límite es de 10MB. Comprimir imágenes o usar PDF.
 
 ### Error 500 al subir comprobante
-- **Causa:** Cloudinary no configurado
-- **Solución:** El sistema usa almacenamiento local automáticamente. Los archivos se guardan en `/uploads/payments/`.
+- **Causa:** Cloudinary no configurado o credenciales incorrectas
+- **Solución:** Configurar correctamente las variables de entorno de Cloudinary en Render.
+
+
+
 
 ### No se muestra el nombre del jugador en pagos
 - **Solución:** Verificar que el backend haga `populate('player_ref')` al obtener pagos.

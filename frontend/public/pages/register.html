@@ -186,13 +186,20 @@
 
     <script src="../js/auth.js"></script>
     <script>
+        console.log('📝 Register script cargado');
+        console.log('🌐 API_URL:', typeof API_URL !== 'undefined' ? API_URL : 'NO DEFINIDO');
+        
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('🚀 Formulario enviado');
             
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            console.log('📧 Email:', email);
+            console.log('👤 Nombre:', name);
             
             // Validar que las contraseñas coincidan
             if (password !== confirmPassword) {
@@ -201,7 +208,9 @@
             }
             
             try {
+                console.log('📡 Enviando request a:', `${API_URL}/auth/register`);
                 const response = await fetch(`${API_URL}/auth/register`, {
+
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -215,9 +224,11 @@
                 });
                 
                 const data = await response.json();
+                console.log('📥 Respuesta:', data);
                 
                 if (response.ok) {
                     showMessage('¡Cuenta creada exitosamente! Redirigiendo...', 'success');
+
                     
                     // Guardar token y datos del usuario
                     localStorage.setItem('token', data.token);
@@ -231,10 +242,11 @@
                     showMessage(data.message || 'Error al crear la cuenta', 'error');
                 }
             } catch (error) {
-                console.error('Error en registro:', error);
-                showMessage('Error al conectar con el servidor', 'error');
+                console.error('❌ Error en registro:', error);
+                showMessage('Error al conectar con el servidor: ' + error.message, 'error');
             }
         });
+
         
         function showMessage(text, type) {
             const messageDiv = document.getElementById('message');

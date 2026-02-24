@@ -8,22 +8,29 @@
 
 .summary-card {
     background: var(--card-bg);
-    padding: 25px;
+    padding: 24px;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
 }
 
 .summary-card i {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
+    flex-shrink: 0;
 }
 
 .summary-card.income i {
@@ -42,14 +49,15 @@
 }
 
 .summary-card h3 {
-    font-size: 24px;
+    font-size: 1.75rem;
     color: var(--text-primary);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    font-weight: 700;
 }
 
 .summary-card p {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 /* Payments Filters */
@@ -59,6 +67,7 @@
     align-items: center;
     margin-bottom: 25px;
     gap: 15px;
+    flex-wrap: wrap;
 }
 
 /* Payments Table */
@@ -69,14 +78,42 @@
     box-shadow: var(--shadow);
 }
 
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#paymentsTable table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
 #paymentsTable th {
     background: var(--primary-color);
     color: white;
     padding: 16px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    white-space: nowrap;
 }
 
 #paymentsTable td {
     padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+#paymentsTable tr:hover {
+    background: var(--bg-color);
+}
+
+#paymentsTable tr:last-child td {
+    border-bottom: none;
 }
 
 .payment-method {
@@ -90,15 +127,34 @@
     color: var(--primary-color);
 }
 
+.payment-amount {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.payment-amount.income {
+    color: var(--accent-color);
+}
+
+.payment-amount.expense {
+    color: var(--danger-color);
+}
+
 /* Action Buttons */
 .btn-action {
     padding: 8px 12px;
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.8rem;
     margin-right: 5px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 36px;
+    font-weight: 500;
 }
 
 .btn-view {
@@ -106,145 +162,138 @@
     color: var(--primary-color);
 }
 
+.btn-view:hover {
+    background: #bfdbfe;
+}
+
 .btn-edit {
     background: #fef3c7;
-    color: var(--warning-color);
+    color: #92400e;
+}
+
+.btn-edit:hover {
+    background: #fde68a;
 }
 
 .btn-delete {
     background: #fee2e2;
-    color: var(--danger-color);
+    color: #991b1b;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
 }
 
 .btn-action:hover {
     transform: scale(1.05);
 }
 
-/* Mobile Optimizations */
-@media (max-width: 768px) {
-    .payments-summary {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .summary-card {
-        padding: 20px;
-        gap: 15px;
-    }
-    
-    .summary-card i {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-    }
-    
-    .summary-card h3 {
-        font-size: 22px;
-    }
-    
-    .payments-filters {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    
-    .payments-filters .search-box {
-        max-width: 100%;
-    }
-    
-    .payments-filters input,
-    .payments-filters select {
-        padding: 12px;
-        font-size: 16px;
-    }
-    
-    #paymentsTable {
-        font-size: 13px;
-    }
-    
-    #paymentsTable th,
-    #paymentsTable td {
-        padding: 12px 10px;
-    }
-    
-    .payment-method {
-        font-size: 12px;
-    }
-    
-    .payment-method i {
-        font-size: 16px;
-    }
-    
-    .btn-action {
-        padding: 6px 10px;
-        font-size: 12px;
-        margin-right: 3px;
-    }
-    
-    .status {
-        padding: 4px 8px;
-        font-size: 10px;
-    }
+/* Add Payment Button */
+.btn-add-payment {
+    padding: 12px 24px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
 }
 
-@media (max-width: 480px) {
-    .payments-summary {
-        gap: 12px;
-    }
-    
-    .summary-card {
-        padding: 15px;
-        gap: 12px;
-    }
-    
-    .summary-card i {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
-    
-    .summary-card h3 {
-        font-size: 20px;
-    }
-    
-    .summary-card p {
-        font-size: 12px;
-    }
-    
-    #paymentsTable {
-        font-size: 12px;
-    }
-    
-    #paymentsTable th,
-    #paymentsTable td {
-        padding: 10px 8px;
-    }
-    
-    .btn-action {
-        padding: 5px 8px;
-        font-size: 11px;
-        display: inline-block;
-        margin-bottom: 3px;
-    }
-    
-    .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+.btn-add-payment:hover {
+    background: #059669;
+    transform: translateY(-2px);
 }
 
-/* Touch Device Optimizations */
-@media (hover: none) and (pointer: coarse) {
-    .btn-action {
-        min-height: 36px;
-        min-width: 36px;
-    }
-    
-    .summary-card:hover {
-        transform: none;
-    }
+/* Payment Status Badges */
+.payment-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.payment-status.paid {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.payment-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.payment-status.overdue {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.payment-status i {
+    font-size: 0.6rem;
+}
+
+/* Payment Type Badge */
+.payment-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--bg-color);
+    color: var(--text-secondary);
+}
+
+/* Date Display */
+.payment-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.payment-date .day {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.payment-date .time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Empty State */
+.payments-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.payments-empty i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.payments-empty h3 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+/* Stats Cards for Mobile */
+.mobile-stats {
+    display: none;
 }
 
 /* Responsive */
@@ -254,14 +303,214 @@
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
     .payments-summary {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .summary-card {
+        padding: 20px;
+    }
+    
+    .summary-card i {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .summary-card h3 {
+        font-size: 1.5rem;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+    .payments-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .payments-filters .search-box,
+    .payments-filters .filter-group {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .filter-group select {
+        flex: 1;
+        min-width: auto;
+    }
+    
+    /* Tabla con scroll horizontal */
+    .table-responsive {
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+    
+    #paymentsTable table {
+        min-width: 600px;
+    }
+    
+    #paymentsTable th,
+    #paymentsTable td {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+    }
+    
+    /* Botones más compactos */
+    .btn-action {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        min-height: 32px;
+        margin-right: 2px;
+    }
+    
+    .btn-add-payment {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+    }
+    
+    /* Mostrar stats en formato móvil */
+    .mobile-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .mobile-stat {
+        background: var(--card-bg);
+        padding: 12px;
+        border-radius: var(--radius);
+        text-align: center;
+        box-shadow: var(--shadow);
+    }
+    
+    .mobile-stat i {
+        font-size: 20px;
+        margin-bottom: 4px;
+        display: block;
+    }
+    
+    .mobile-stat.income i {
+        color: var(--accent-color);
+    }
+    
+    .mobile-stat.pending i {
+        color: var(--warning-color);
+    }
+    
+    .mobile-stat.overdue i {
+        color: var(--danger-color);
+    }
+    
+    .mobile-stat h4 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+    
+    .mobile-stat p {
+        font-size: 0.65rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+    
+    /* Ocultar summary cards en móvil, mostrar mobile-stats */
     .payments-summary {
+        display: none;
+    }
+    
+    .payments-empty {
+        padding: 40px 16px;
+    }
+    
+    .payments-empty i {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-stats {
         grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .mobile-stat {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 12px 16px;
+    }
+    
+    .mobile-stat i {
+        margin-bottom: 0;
+        font-size: 24px;
+    }
+    
+    .mobile-stat > div {
+        flex: 1;
+    }
+    
+    #paymentsTable th,
+    #paymentsTable td {
+        padding: 10px 6px;
+        font-size: 0.75rem;
+    }
+    
+    .payment-status,
+    .payment-type {
+        padding: 4px 8px;
+        font-size: 0.65rem;
+    }
+    
+    .btn-action {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .btn-action i {
+        font-size: 0.8rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .summary-card:hover,
+    .btn-action:hover {
+        transform: none;
+    }
+    
+    .summary-card:active,
+    .btn-action:active {
+        transform: scale(0.98);
+    }
+    
+    .btn-action {
+        min-height: 44px;
+        padding: 10px 14px;
+    }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    .summary-card,
+    .btn-action,
+    .btn-add-payment {
+        transition: none !important;
+    }
+    
+    .summary-card:hover,
+    .btn-action:hover,
+    .btn-add-payment:hover {
+        transform: none !important;
     }
 }

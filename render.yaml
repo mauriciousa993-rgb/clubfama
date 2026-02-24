@@ -1,8 +1,6 @@
-# Trigger deploy after manual deploy - Render reconnect
 services:
   - type: web
-    name: club-fama-valle-api
-
+    name: club-fama-valle
     runtime: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
@@ -12,18 +10,14 @@ services:
       - key: PORT
         value: 8080
       - key: MONGODB_URI
-        sync: false  # Configurar en el dashboard de Render
+        sync: false
       - key: JWT_SECRET
-        sync: false  # Configurar en el dashboard de Render
-      - key: FRONTEND_URL
-        value: https://club-fama-valle.vercel.app
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
-        sync: false  # Opcional: Configurar si se usa Cloudinary
+        sync: false
       - key: CLOUDINARY_API_KEY
-        sync: false  # Opcional
+        sync: false
       - key: CLOUDINARY_API_SECRET
-        sync: false  # Opcional
-    disk:
-      name: uploads
-      mountPath: /opt/render/project/src/uploads
-      sizeGB: 1
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
