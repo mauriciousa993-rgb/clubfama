@@ -203,7 +203,8 @@ function hideAutoSaveIndicator() {
 // Hacer jugador arrastrable
 function makeDraggable(element, playerNumber) {
     let isDragging = false;
-    let startX, startY, initialLeft, initialTop;
+    let startX, startY;
+    let startPercentX, startPercentY;
     
     element.addEventListener('mousedown', (e) => {
         if (e.target.closest('.player-controls')) return;
@@ -211,38 +212,55 @@ function makeDraggable(element, playerNumber) {
         isDragging = true;
         element.classList.add('dragging');
         
-        const rect = element.getBoundingClientRect();
-        const parentRect = element.parentElement.getBoundingClientRect();
+        const court = document.getElementById('basketballCourt');
+        const courtRect = court.getBoundingClientRect();
         
+        // Store starting mouse position
         startX = e.clientX;
         startY = e.clientY;
-        initialLeft = element.offsetLeft;
-        initialTop = element.offsetTop;
+        
+        // Get current player position in percentages
+        const player = players.find(p => p.number === playerNumber);
+        if (player) {
+            startPercentX = player.x;
+            startPercentY = player.y;
+        }
         
         element.style.cursor = 'grabbing';
+        e.preventDefault();
     });
     
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         
         const court = document.getElementById('basketballCourt');
-        const rect = court.getBoundingClientRect();
+        const courtRect = court.getBoundingClientRect();
         
-        let newX = initialLeft + (e.clientX - startX);
-        let newY = initialTop + (e.clientY - startY);
+        // Calculate mouse movement in pixels
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
         
-        // Limitar a la cancha (con margen para el tamaño del jugador)
-        newX = Math.max(20, Math.min(newX, rect.width - 20));
-        newY = Math.max(20, Math.min(newY, rect.height - 20));
+        // Convert to percentage movement
+        const deltaPercentX = (deltaX / courtRect.width) * 100;
+        const deltaPercentY = (deltaY / courtRect.height) * 100;
         
-        element.style.left = `${newX}px`;
-        element.style.top = `${newY}px`;
+        // Calculate new position in percentages
+        let newPercentX = startPercentX + deltaPercentX;
+        let newPercentY = startPercentY + deltaPercentY;
         
-        // Actualizar posición en porcentaje
+        // Limit to court bounds (4% to 96% to keep player visible)
+        newPercentX = Math.max(4, Math.min(newPercentX, 96));
+        newPercentY = Math.max(4, Math.min(newPercentY, 96));
+        
+        // Update element position (always in percentages)
+        element.style.left = `${newPercentX}%`;
+        element.style.top = `${newPercentY}%`;
+        
+        // Update player data
         const player = players.find(p => p.number === playerNumber);
         if (player) {
-            player.x = (newX / rect.width) * 100;
-            player.y = (newY / rect.height) * 100;
+            player.x = newPercentX;
+            player.y = newPercentY;
         }
         
         // Auto-save durante el arrastre (con debounce)
@@ -260,7 +278,72 @@ function makeDraggable(element, playerNumber) {
             lastSavedPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
         }
     });
+    
+    // Touch support for mobile
+    element.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.player-controls')) return;
+        
+        isDragging = true;
+        element.classList.add('dragging');
+        
+        const court = document.getElementById('basketballCourt');
+        const touch = e.touches[0];
+        
+        startX = touch.clientX;
+        startY = touch.clientY;
+        
+        const player = players.find(p => p.number === playerNumber);
+        if (player) {
+            startPercentX = player.x;
+            startPercentY = player.y;
+        }
+        
+        e.preventDefault();
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const court = document.getElementById('basketballCourt');
+        const courtRect = court.getBoundingClientRect();
+        const touch = e.touches[0];
+        
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        
+        const deltaPercentX = (deltaX / courtRect.width) * 100;
+        const deltaPercentY = (deltaY / courtRect.height) * 100;
+        
+        let newPercentX = startPercentX + deltaPercentX;
+        let newPercentY = startPercentY + deltaPercentY;
+        
+        newPercentX = Math.max(4, Math.min(newPercentX, 96));
+        newPercentY = Math.max(4, Math.min(newPercentY, 96));
+        
+        element.style.left = `${newPercentX}%`;
+        element.style.top = `${newPercentY}%`;
+        
+        const player = players.find(p => p.number === playerNumber);
+        if (player) {
+            player.x = newPercentX;
+            player.y = newPercentY;
+        }
+        
+        debouncedAutoSave();
+        e.preventDefault();
+    }, { passive: false });
+    
+    document.addEventListener('touchend', () => {
+        if (isDragging) {
+            isDragging = false;
+            element.classList.remove('dragging');
+            saveCurrentStepPositions();
+            showAutoSaveIndicator('Guardado ✓');
+            lastSavedPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
+        }
+    });
 }
+
 
 
 // Toggle balón para un jugador
