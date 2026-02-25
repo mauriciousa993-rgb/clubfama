@@ -1,0 +1,929 @@
+/* ============================================
+   SISTEMAS DE JUEGO - ESTILOS
+   ============================================ */
+
+/* Filtros */
+.filters-bar {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.filter-group select {
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Grid de sistemas */
+.formations-grid,
+.formations-viewer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0 20px 20px;
+}
+
+/* Cards de sistemas */
+.formation-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.formation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.formation-card-header {
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+}
+
+.formation-card-header.defensa {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.formation-card-header.transicion {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.formation-card-header.out_of_bounds {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.formation-card-header.freethrow {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.formation-card-header.sistema {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.formation-card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.formation-code {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+.formation-badges {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.formation-card-body {
+    padding: 20px;
+}
+
+.formation-preview {
+    width: 100%;
+    height: 150px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.formation-preview svg {
+    width: 80%;
+    height: 80%;
+}
+
+.formation-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.formation-steps {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.formation-description {
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.formation-card-footer {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.formation-card-footer button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-view {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.btn-view:hover {
+    background: #bbdefb;
+}
+
+.btn-edit {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.btn-edit:hover {
+    background: #ffe0b2;
+}
+
+.btn-delete {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.btn-delete:hover {
+    background: #ffcdd2;
+}
+
+/* ============================================
+   MODAL EDITOR
+   ============================================ */
+
+.modal-large {
+    max-width: 1200px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.formation-editor {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+    padding: 20px;
+}
+
+@media (max-width: 900px) {
+    .formation-editor {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Panel izquierdo */
+.editor-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.form-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.step-counter {
+    font-size: 13px;
+    color: #6c757d;
+    background: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Timeline de pasos */
+.steps-timeline {
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.step-item:hover {
+    background: #e3f2fd;
+    border-color: #bbdefb;
+}
+
+.step-item.active {
+    background: #1976d2;
+    color: white;
+    border-color: #1976d2;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: #6c757d;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.step-item.active .step-number {
+    background: white;
+    color: #1976d2;
+}
+
+.step-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.step-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.step-duration {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+.step-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* ============================================
+   CANCHA DE BALONCESTO
+   ============================================ */
+
+.court-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.court-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.basketball-court {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    aspect-ratio: 500/470;
+    background: #c17f59;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.court-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.players-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Jugadores en la cancha */
+.court-player {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    pointer-events: auto;
+    z-index: 10;
+    transition: transform 0.1s;
+}
+
+.court-player:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.court-player.dragging {
+    z-index: 100;
+}
+
+.player-jersey {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+.player-jersey.has-ball {
+    background: linear-gradient(135deg, #ffd93d 0%, #f5c800 100%);
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 15px rgba(255, 217, 61, 0.6);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.player-has-ball-indicator {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background: #ffd93d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: #333;
+    border: 2px solid white;
+}
+
+.player-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: white;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.player-controls {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    gap: 5px;
+    background: white;
+    padding: 5px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.court-player:hover .player-controls {
+    display: flex;
+}
+
+.player-controls button {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-ball {
+    background: #ffd93d;
+    color: #333;
+}
+
+.btn-ball.active {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Balón */
+.basketball {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #ff6b6b;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Controles de animación */
+.animation-controls-bar,
+.viewer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: white;
+    color: #495057;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: #e3f2fd;
+    color: #1976d2;
+    transform: scale(1.1);
+}
+
+.btn-play,
+.btn-play-large {
+    background: #28a745;
+    color: white;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+
+.btn-play:hover,
+.btn-play-large:hover {
+    background: #218838;
+}
+
+.btn-play-large {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.speed-control label {
+    font-size: 13px;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.speed-control select {
+    padding: 6px 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 13px;
+    background: white;
+}
+
+.step-indicator {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    background: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Barra de progreso */
+.progress-bar-container {
+    flex: 1;
+    max-width: 200px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Instrucciones */
+.court-instructions {
+    background: #e3f2fd;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1976d2;
+}
+
+.court-instructions i {
+    margin-right: 5px;
+}
+
+/* ============================================
+   VISUALIZADOR (JUGADOR)
+   ============================================ */
+
+.viewer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.viewer-description {
+    width: 100%;
+    margin: 10px 0 0 0;
+    color: #6c757d;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.viewer-court-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.step-info-panel {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.step-info-panel h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 16px;
+}
+
+#stepDescriptionText {
+    margin: 0;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.steps-list-panel {
+    margin-top: 20px;
+}
+
+.steps-list-panel h4 {
+    margin: 0 0 15px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.steps-list-horizontal {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.step-thumbnail {
+    min-width: 80px;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.step-thumbnail:hover {
+    background: #e3f2fd;
+    border-color: #bbdefb;
+}
+
+.step-thumbnail.active {
+    background: #1976d2;
+    border-color: #1976d2;
+    color: white;
+}
+
+.step-thumbnail-number {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.step-thumbnail::after {
+    content: attr(data-duration);
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+/* ============================================
+   BOTONES Y UTILIDADES
+   ============================================ */
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #dee2e6;
+}
+
+.btn-danger {
+    background: #ffebee;
+    color: #d32f2f;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: #ffcdd2;
+}
+
+/* Modal footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .formations-grid,
+    .formations-viewer-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-bar {
+        flex-direction: column;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-group select {
+        width: 100%;
+    }
+    
+    .formation-editor {
+        grid-template-columns: 1fr;
+    }
+    
+    .basketball-court {
+        max-width: 100%;
+    }
+    
+    .court-player {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .player-jersey {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+}

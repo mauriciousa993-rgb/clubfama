@@ -70,6 +70,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Rutas API
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/formations', require('./routes/formationRoutes'));
+
 
 // Ruta de salud/health check
 app.get('/api/health', (req, res) => {

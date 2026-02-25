@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas de Juego - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/formations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="players.html">
+                        <i class="fas fa-users"></i>
+                        <span>Jugadores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="payments.html">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Pagos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="formations.html">
+                        <i class="fas fa-basketball-ball"></i>
+                        <span>Sistemas de Juego</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Informes</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-basketball-ball"></i> Sistemas de Juego</h1>
+                <button onclick="openFormationModal()" class="btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Sistema
+                </button>
+            </header>
+
+            <!-- Filtros -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label>Tipo:</label>
+                    <select id="typeFilter" onchange="filterFormations()">
+                        <option value="all">Todos</option>
+                        <option value="ataque">Ataque</option>
+                        <option value="defensa">Defensa</option>
+                        <option value="transicion">Transición</option>
+                        <option value="out_of_bounds">Bola Parada</option>
+                        <option value="freethrow">Tiros Libres</option>
+                        <option value="sistema">Sistema General</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Categoría:</label>
+                    <select id="categoryFilter" onchange="filterFormations()">
+                        <option value="all">Todas</option>
+                        <option value="femenino">Femenino</option>
+                        <option value="mini">Mini</option>
+                        <option value="juvenil">Juvenil</option>
+                        <option value="elite">Élite</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista de sistemas -->
+            <div class="formations-grid" id="formationsList">
+                <!-- Se llena con JavaScript -->
+            </div>
+
+            <div id="noFormations" class="empty-state" style="display: none;">
+                <i class="fas fa-basketball-ball"></i>
+                <p>No hay sistemas de juego creados</p>
+                <button onclick="openFormationModal()" class="btn-primary">
+                    Crear el primero
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Editor de Sistema -->
+    <div id="formationModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Crear Sistema de Juego</h2>
+                <button onclick="closeFormationModal()" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="formation-editor">
+                <!-- Panel izquierdo: Configuración -->
+                <div class="editor-panel">
+                    <div class="form-section">
+                        <h3>Información General</h3>
+                        <div class="form-group">
+                            <label>Nombre del sistema</label>
+                            <input type="text" id="formationName" placeholder="Ej: Pick and Roll Básico">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Código</label>
+                            <input type="text" id="formationCode" placeholder="Ej: PNR-01">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tipo</label>
+                                <select id="formationType">
+                                    <option value="ataque">Ataque</option>
+                                    <option value="defensa">Defensa</option>
+                                    <option value="transicion">Transición</option>
+                                    <option value="out_of_bounds">Bola Parada</option>
+                                    <option value="freethrow">Tiros Libres</option>
+                                    <option value="sistema">Sistema General</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Categoría</label>
+                                <select id="formationCategory">
+                                    <option value="all">Todas</option>
+                                    <option value="femenino">Femenino</option>
+                                    <option value="mini">Mini</option>
+                                    <option value="juvenil">Juvenil</option>
+                                    <option value="elite">Élite</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea id="formationDescription" rows="2" placeholder="Descripción opcional..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Timeline de pasos -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3>Pasos de la Jugada</h3>
+                            <span id="stepCounter" class="step-counter">Paso 1 de 1</span>
+                        </div>
+                        
+                        <div class="steps-timeline" id="stepsTimeline">
+                            <!-- Pasos se agregan dinámicamente -->
+                        </div>
+                        
+                        <div class="step-actions">
+                            <button onclick="addStep()" class="btn-secondary btn-sm">
+                                <i class="fas fa-plus"></i> Agregar Paso
+                            </button>
+                            <button onclick="removeCurrentStep()" class="btn-danger btn-sm" id="removeStepBtn" style="display: none;">
+                                <i class="fas fa-trash"></i> Eliminar Paso
+                            </button>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Duración del paso (ms)</label>
+                            <input type="range" id="stepDuration" min="500" max="5000" step="500" value="2000" oninput="updateDurationDisplay()">
+                            <span id="durationDisplay">2000ms</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Descripción del paso</label>
+                            <input type="text" id="stepDescription" placeholder="Ej: P1 pasa a P2 y corta al aro">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel derecho: Cancha interactiva -->
+                <div class="court-panel">
+                    <div class="court-container">
+                        <div id="basketballCourt" class="basketball-court">
+                            <!-- Cancha SVG -->
+                            <svg viewBox="0 0 500 470" class="court-svg" preserveAspectRatio="xMidYMid meet">
+                                <!-- Fondo de cancha -->
+                                <rect x="0" y="0" width="500" height="470" fill="#c17f59"/>
+                                
+                                <!-- Zona de fondo -->
+                                <path d="M 50,50 L 450,50 L 450,150 Q 250,200 50,150 Z" 
+                                      fill="#a66a48" stroke="none"/>
+                                
+                                <!-- Líneas principales -->
+                                <rect x="50" y="50" width="400" height="370" 
+                                      fill="none" stroke="white" stroke-width="3"/>
+                                
+                                <!-- Línea de medio campo -->
+                                <line x1="50" y1="235" x2="450" y2="235" 
+                                      stroke="white" stroke-width="3"/>
+                                
+                                <!-- Círculo central -->
+                                <circle cx="250" cy="235" r="60" 
+                                        fill="none" stroke="white" stroke-width="3"/>
+                                <circle cx="250" cy="235" r="4" 
+                                        fill="white"/>
+                                
+                                <!-- Aro y zona -->
+                                <path d="M 200,50 L 200,120 Q 250,140 300,120 L 300,50" 
+                                      fill="none" stroke="white" stroke-width="3"/>
+                                <circle cx="250" cy="85" r="25" 
+                                        fill="none" stroke="white" stroke-width="3"/>
+                                <line x1="225" y1="50" x2="225" y2="60" 
+                                      stroke="white" stroke-width="3"/>
+                                <line x1="275" y1="50" x2="275" y2="60" 
+                                      stroke="white" stroke-width="3"/>
+                                
+                                <!-- Zona de 3 puntos -->
+                                <path d="M 50,180 Q 250,100 450,180" 
+                                      fill="none" stroke="white" stroke-width="3" stroke-dasharray="5,5"/>
+                            </svg>
+                            
+                            <!-- Capa de jugadores -->
+                            <div id="playersLayer" class="players-layer"></div>
+                            
+                            <!-- Balón -->
+                            <div id="basketball" class="basketball" style="display: none;">
+                                <i class="fas fa-basketball-ball"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Controles de animación -->
+                        <div class="animation-controls-bar">
+                            <button onclick="previousStep()" class="btn-icon" title="Paso anterior">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button onclick="playPreview()" class="btn-icon btn-play" title="Reproducir">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button onclick="nextStep()" class="btn-icon" title="Siguiente paso">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                            <div class="speed-control">
+                                <label>Velocidad:</label>
+                                <select id="previewSpeed" onchange="updatePreviewSpeed()">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="1" selected>1x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="2">2x</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Instrucciones -->
+                    <div class="court-instructions">
+                        <p><i class="fas fa-info-circle"></i> Arrastra los jugadores para posicionarlos. Selecciona quién tiene el balón.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeFormationModal()" class="btn-secondary">Cancelar</button>
+                <button onclick="saveFormation()" class="btn-primary">
+                    <i class="fas fa-save"></i> Guardar Sistema
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación eliminar -->
+    <div id="deleteModal" class="modal modal-small">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Eliminación</h3>
+            </div>
+            <p>¿Estás seguro de que deseas eliminar este sistema de juego?</p>
+            <div class="modal-footer">
+                <button onclick="closeDeleteModal()" class="btn-secondary">Cancelar</button>
+                <button onclick="confirmDelete()" class="btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/formations.js"></script>
+</body>
+</html>

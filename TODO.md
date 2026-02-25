@@ -56,6 +56,32 @@
 - [ ] 75% - Casi completo
 - [x] 100% - Completado ✅
 
+## Nuevas Funcionalidades
+
+### 8. Sistemas de Juego (Baloncesto) ✅
+- [x] Crear modelo de datos `Formation.js` con pasos y movimientos
+- [x] Implementar controlador `formationController.js` (CRUD)
+- [x] Crear rutas API `formationRoutes.js`
+- [x] Integrar rutas en `server.js`
+- [x] Crear página admin `formations.html` con editor visual
+- [x] Crear página jugador `player-formations.html` con visualizador
+- [x] Implementar CSS `formations.css` con cancha interactiva
+- [x] Crear JavaScript admin `formations.js` (drag & drop, animación)
+- [x] Crear JavaScript jugador `player-formations.js` (visualización)
+- [x] Agregar menú en `dashboard.html` (admin)
+- [x] Agregar menú en `player-dashboard.html` (jugador)
+
+### Características implementadas:
+- **Editor visual**: Cancha de baloncesto con 5 jugadores posicionables
+- **Drag & drop**: Arrastrar jugadores para definir posiciones
+- **Múltiples pasos**: Crear secuencias de jugadas paso a paso
+- **Animación**: Reproducción fluida de movimientos entre pasos
+- **Control de velocidad**: 0.5x, 1x, 1.5x, 2x
+- **Balón interactivo**: Indicador visual de quién tiene el balón
+- **Filtros**: Por tipo (ataque, defensa, transición) y categoría
+- **Responsive**: Adaptado para móviles y tablets
+
+
 ## Resumen de Mejoras Implementadas
 
 ### 🎯 Optimizaciones Clave:

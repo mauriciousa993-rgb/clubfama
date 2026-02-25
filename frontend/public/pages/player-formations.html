@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas de Juego - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/formations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="player-dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="player-calendar.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Calendario</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="player-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="player-formations.html">
+                        <i class="fas fa-basketball-ball"></i>
+                        <span>Sistemas de Juego</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-basketball-ball"></i> Sistemas de Juego</h1>
+                <div class="header-filters">
+                    <select id="typeFilter" onchange="filterFormations()">
+                        <option value="all">Todos los tipos</option>
+                        <option value="ataque">Ataque</option>
+                        <option value="defensa">Defensa</option>
+                        <option value="transicion">Transición</option>
+                        <option value="out_of_bounds">Bola Parada</option>
+                        <option value="freethrow">Tiros Libres</option>
+                        <option value="sistema">Sistema General</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Lista de sistemas -->
+            <div class="formations-viewer-grid" id="formationsList">
+                <!-- Se llena con JavaScript -->
+            </div>
+
+            <div id="noFormations" class="empty-state" style="display: none;">
+                <i class="fas fa-basketball-ball"></i>
+                <p>No hay sistemas de juego disponibles</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Visualizador -->
+    <div id="viewerModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="viewerTitle">Sistema de Juego</h2>
+                <button onclick="closeViewerModal()" class="btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="formation-viewer">
+                <div class="viewer-info">
+                    <span id="viewerType" class="badge">Ataque</span>
+                    <span id="viewerCategory" class="badge">Juvenil</span>
+                    <p id="viewerDescription" class="viewer-description"></p>
+                </div>
+                
+                <div class="viewer-court-container">
+                    <div id="viewerCourt" class="basketball-court">
+                        <!-- Cancha SVG (misma que en editor) -->
+                        <svg viewBox="0 0 500 470" class="court-svg" preserveAspectRatio="xMidYMid meet">
+                            <rect x="0" y="0" width="500" height="470" fill="#c17f59"/>
+                            <path d="M 50,50 L 450,50 L 450,150 Q 250,200 50,150 Z" fill="#a66a48" stroke="none"/>
+                            <rect x="50" y="50" width="400" height="370" fill="none" stroke="white" stroke-width="3"/>
+                            <line x1="50" y1="235" x2="450" y2="235" stroke="white" stroke-width="3"/>
+                            <circle cx="250" cy="235" r="60" fill="none" stroke="white" stroke-width="3"/>
+                            <circle cx="250" cy="235" r="4" fill="white"/>
+                            <path d="M 200,50 L 200,120 Q 250,140 300,120 L 300,50" fill="none" stroke="white" stroke-width="3"/>
+                            <circle cx="250" cy="85" r="25" fill="none" stroke="white" stroke-width="3"/>
+                            <line x1="225" y1="50" x2="225" y2="60" stroke="white" stroke-width="3"/>
+                            <line x1="275" y1="50" x2="275" y2="60" stroke="white" stroke-width="3"/>
+                            <path d="M 50,180 Q 250,100 450,180" fill="none" stroke="white" stroke-width="3" stroke-dasharray="5,5"/>
+                        </svg>
+                        
+                        <div id="viewerPlayersLayer" class="players-layer"></div>
+                        <div id="viewerBasketball" class="basketball" style="display: none;">
+                            <i class="fas fa-basketball-ball"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Controles de animación -->
+                    <div class="viewer-controls">
+                        <div class="control-row">
+                            <button onclick="resetAnimation()" class="btn-icon" title="Reiniciar">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button onclick="togglePlayPause()" class="btn-icon btn-play-large" id="playPauseBtn" title="Reproducir/Pausar">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="step-indicator">
+                                <span id="currentStepNum">1</span> / <span id="totalSteps">1</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-row">
+                            <div class="speed-control">
+                                <label>Velocidad:</label>
+                                <select id="animationSpeed" onchange="updateAnimationSpeed()">
+                                    <option value="0.5">0.5x</option>
+                                    <option value="1" selected>1x</option>
+                                    <option value="1.5">1.5x</option>
+                                    <option value="2">2x</option>
+                                </select>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div id="animationProgress" class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Descripción del paso -->
+                <div class="step-info-panel">
+                    <h4 id="stepTitle">Paso 1</h4>
+                    <p id="stepDescriptionText">Descripción del paso...</p>
+                </div>
+                
+                <!-- Lista de pasos -->
+                <div class="steps-list-panel">
+                    <h4>Secuencia de la jugada</h4>
+                    <div id="viewerStepsList" class="steps-list-horizontal">
+                        <!-- Pasos en miniatura -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/player-formations.js"></script>
+</body>
+</html>
