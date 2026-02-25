@@ -122,10 +122,13 @@ async function loadStats() {
             const currentYear = new Date().getFullYear();
             
             const monthlyPayments = payments.filter(p => {
-                const paymentDate = new Date(p.date);
-                return paymentDate.getMonth() + 1 === currentMonth && 
-                       paymentDate.getFullYear() === currentYear &&
-                       p.status === 'paid';
+                const monthCovered = (p.month_covered || '').toLowerCase();
+                const currentMonthName = new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase();
+                const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
+                const isCurrentYear = paymentDate ? paymentDate.getFullYear() === currentYear : true;
+                return monthCovered === currentMonthName &&
+                       isCurrentYear &&
+                       p.status === 'approved';
             });
             
             const totalMonthly = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
@@ -162,14 +165,14 @@ async function loadRecentPayments() {
             
             tbody.innerHTML = recentPayments.map(payment => `
                 <tr>
-                    <td>${payment.playerName || 'Jugador'}</td>
+                    <td>${payment.player_ref?.name || payment.playerName || 'Jugador'}</td>
                     <td>${capitalize(payment.concept || 'Mensualidad')}</td>
                     <td>${formatCurrency(payment.amount || 0)}</td>
-                    <td>${formatDate(payment.date)}</td>
+                    <td>${formatDate(payment.date_uploaded)}</td>
                     <td>
                         <span class="status ${payment.status || 'pending'}">
-                            ${payment.status === 'paid' ? 'Pagado' : 
-                              payment.status === 'pending' ? 'Pendiente' : 'Vencido'}
+                            ${payment.status === 'approved' ? 'Aprobado' : 
+                              payment.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
                         </span>
                     </td>
                 </tr>

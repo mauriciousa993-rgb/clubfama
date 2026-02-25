@@ -67,7 +67,7 @@ async function loadFormations() {
         const category = user.team_category || 'all';
         const typeFilter = document.getElementById('typeFilter')?.value || 'all';
         
-        const response = await fetch(`/api/formations?category=${category}&type=${typeFilter}`, {
+        const response = await fetch(`${API_URL}/formations?category=${category}&type=${typeFilter}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -146,7 +146,7 @@ function filterFormations() {
 // Abrir visualizador de formación
 async function openFormationViewer(id) {
     try {
-        const response = await fetch(`/api/formations/${id}`, {
+        const response = await fetch(`${API_URL}/formations/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
