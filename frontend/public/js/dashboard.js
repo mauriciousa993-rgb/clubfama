@@ -201,13 +201,20 @@ async function loadUpcomingEvents() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
+    // Helper para parsear fecha local desde YYYY-MM-DD
+    const parseLocalDate = (dateStr) => {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
+    
     const upcomingEvents = events
         .filter(event => {
-            const eventDate = new Date(event.date);
+            const eventDate = parseLocalDate(event.date);
             return eventDate >= today;
         })
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .sort((a, b) => parseLocalDate(a.date) - parseLocalDate(b.date))
         .slice(0, 5); // Mostrar máximo 5 eventos próximos
+
     
     if (upcomingEvents.length === 0) {
         eventsList.innerHTML = '<p class="no-events">No hay eventos próximos</p>';
@@ -226,16 +233,20 @@ async function loadUpcomingEvents() {
     }
     
     eventsList.innerHTML = upcomingEvents.map(event => {
-        const eventDate = new Date(event.date);
-        const day = eventDate.getDate().toString().padStart(2, '0');
-        const month = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+        // Parsear fecha local desde YYYY-MM-DD
+        const [year, month, day] = event.date.split('-').map(Number);
+        const eventDate = new Date(year, month - 1, day);
+        const dayStr = day.toString().padStart(2, '0');
+        const monthStr = eventDate.toLocaleDateString('es-ES', { month: 'short' });
         
         return `
+
             <div class="event-item">
                 <div class="event-date">
-                    <div class="day">${day}</div>
-                    <div class="month">${month}</div>
+                    <div class="day">${dayStr}</div>
+                    <div class="month">${monthStr}</div>
                 </div>
+
                 <div class="event-info">
                     <h4>${event.title}</h4>
                     <p><i class="fas fa-clock"></i> ${event.time || '--:--'}</p>
