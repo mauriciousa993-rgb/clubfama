@@ -417,6 +417,15 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
+/* Fallback para navegadores sin aspect-ratio */
+@supports not (aspect-ratio: 500/470) {
+    .basketball-court::before {
+        content: '';
+        display: block;
+        padding-top: 94%;
+    }
+}
+
 .court-svg {
     position: absolute;
     top: 0;
@@ -469,6 +478,7 @@
     border: 3px solid white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     transition: all 0.2s;
+    position: relative;
 }
 
 .player-jersey.has-ball {
@@ -554,17 +564,23 @@
 /* Balón */
 .basketball {
     position: absolute;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     transform: translate(-50%, -50%);
     z-index: 20;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 20px;
     color: #ff6b6b;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    pointer-events: none;
+}
+
+.basketball i {
+    font-size: 20px;
+    line-height: 1;
 }
 
 /* Controles de animación */
@@ -925,5 +941,51 @@
         width: 32px;
         height: 32px;
         font-size: 12px;
+    }
+    
+    .basketball {
+        width: 20px;
+        height: 20px;
+        font-size: 16px;
+    }
+    
+    .basketball i {
+        font-size: 16px;
+    }
+    
+    .modal-large {
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}
+
+/* Fix para móviles pequeños */
+@media (max-width: 480px) {
+    .court-player {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .player-jersey {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+        border-width: 2px;
+    }
+    
+    .player-label {
+        font-size: 9px;
+        padding: 1px 4px;
+    }
+    
+    .basketball {
+        width: 18px;
+        height: 18px;
+        font-size: 14px;
+    }
+    
+    .basketball i {
+        font-size: 14px;
     }
 }
