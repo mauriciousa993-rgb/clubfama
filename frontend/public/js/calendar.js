@@ -132,12 +132,14 @@ function createDayElement(day, isOtherMonth, isToday = false) {
 // Obtener eventos para un día específico
 function getEventsForDay(year, month, day) {
     return events.filter(event => {
-        const eventDate = new Date(event.date);
-        return eventDate.getDate() === day &&
-               eventDate.getMonth() === month &&
-               eventDate.getFullYear() === year;
+        // Parsear la fecha correctamente como local (YYYY-MM-DD)
+        const [eventYear, eventMonth, eventDay] = event.date.split('-').map(Number);
+        return eventDay === day &&
+               (eventMonth - 1) === month &&
+               eventYear === year;
     });
 }
+
 
 // Mes anterior
 function previousMonth() {
@@ -183,9 +185,10 @@ function renderEventsList() {
     const currentYear = currentDate.getFullYear();
     
     const monthEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
-        return eventDate.getMonth() === currentMonth && 
-               eventDate.getFullYear() === currentYear;
+        // Parsear la fecha correctamente como local (YYYY-MM-DD)
+        const [eventYear, eventMonth, eventDay] = event.date.split('-').map(Number);
+        return (eventMonth - 1) === currentMonth && 
+               eventYear === currentYear;
     });
     
     if (monthEvents.length === 0) {
@@ -193,13 +196,19 @@ function renderEventsList() {
         return;
     }
     
-    // Ordenar por fecha
-    monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Ordenar por fecha (comparando componentes de fecha local)
+    monthEvents.sort((a, b) => {
+        const [aYear, aMonth, aDay] = a.date.split('-').map(Number);
+        const [bYear, bMonth, bDay] = b.date.split('-').map(Number);
+        return new Date(aYear, aMonth - 1, aDay) - new Date(bYear, bMonth - 1, bDay);
+    });
     
     container.innerHTML = monthEvents.map(event => {
-        const eventDate = new Date(event.date);
-        const day = eventDate.getDate();
-        const month = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+        // Parsear la fecha correctamente como local
+        const [eventYear, eventMonth, eventDay] = event.date.split('-').map(Number);
+        const day = eventDay;
+        const month = new Date(eventYear, eventMonth - 1).toLocaleDateString('es-ES', { month: 'short' });
+
         
         return `
             <div class="event-card ${event.type}" data-event-id="${event._id}">
@@ -300,13 +309,28 @@ function closeEventModal() {
 // Generar fechas recurrentes
 function generateRecurringDates(startDate, recurrence, endDate) {
     const dates = [];
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
+    
+    // Parsear fecha inicial como local (YYYY-MM-DD)
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+    const start = new Date(startYear, startMonth - 1, startDay);
+    
+    // Fecha final (default: 1 año desde inicio)
+    let end;
+    if (endDate) {
+        const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+        end = new Date(endYear, endMonth - 1, endDay);
+    } else {
+        end = new Date(startYear + 1, startMonth - 1, startDay);
+    }
     
     let current = new Date(start);
     
     while (current <= end) {
-        dates.push(new Date(current).toISOString().split('T')[0]);
+        // Guardar fecha en formato YYYY-MM-DD usando componentes locales
+        const year = current.getFullYear();
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const day = String(current.getDate()).padStart(2, '0');
+        dates.push(`${year}-${month}-${day}`);
         
         switch (recurrence) {
             case 'daily':
