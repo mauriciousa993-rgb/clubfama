@@ -80,11 +80,17 @@ function renderPayments(paymentsToRender) {
                 <button class="btn-action btn-delete" onclick="rejectPayment('${payment._id}')" title="Rechazar">
                     <i class="fas fa-times"></i>
                 </button>
+                <button class="btn-action btn-delete" onclick="deletePayment('${payment._id}')" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
             `;
         } else {
             actionButtons = `
                 <button class="btn-action btn-view" onclick="viewReceipt('${payment._id}')" title="Ver comprobante">
                     <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-action btn-delete" onclick="deletePayment('${payment._id}')" title="Eliminar">
+                    <i class="fas fa-trash"></i>
                 </button>
             `;
         }
