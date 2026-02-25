@@ -61,7 +61,58 @@
     background: rgba(255,255,255,0.3);
 }
 
+/* Mobile Menu Button - Visible en móviles */
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 52px;
+    height: 52px;
+    background: var(--secondary-color);
+    color: white;
+    border: 3px solid white;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+    background: #d97706;
+    transform: scale(1.05);
+}
+
+.mobile-menu-btn:active {
+    transform: scale(0.95);
+}
+
+/* Mobile Overlay */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
 /* Sidebar */
+
+
 .sidebar {
     width: 260px;
     background: var(--primary-color);
@@ -533,12 +584,19 @@ tr:hover {
 }
 
 @media (max-width: 768px) {
+    /* Mostrar botón de menú móvil */
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
     /* Mostrar header móvil */
     .mobile-header {
         display: flex;
     }
     
     /* Sidebar como menú deslizable */
+
+
     .sidebar {
         transform: translateX(-100%);
         width: 280px;

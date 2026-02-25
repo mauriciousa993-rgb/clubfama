@@ -543,13 +543,4 @@ a {
     }
 }
 
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-color: #111827;
-        --card-bg: #1f2937;
-        --text-primary: #f9fafb;
-        --text-secondary: #9ca3af;
-        --border-color: #374151;
-    }
-}
+/* Dark mode disabled to ensure consistent colors across all devices */
