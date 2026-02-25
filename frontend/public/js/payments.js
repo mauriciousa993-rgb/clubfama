@@ -208,25 +208,30 @@ async function rejectPayment(id) {
 
 // Actualizar resumen
 function updateSummary() {
-    const currentMonth = new Date().getMonth() + 1;
+    const currentMonthName = new Date().toLocaleString('en-US', { month: 'long' });
     const currentYear = new Date().getFullYear();
-    
-    const monthlyPayments = payments.filter(p => 
-        p.month === currentMonth && 
-        p.year === currentYear &&
-        p.status === 'paid'
-    );
-    
+
+    const monthlyPayments = payments.filter(p => {
+        const monthCovered = (p.month_covered || '').toLowerCase();
+        const isCurrentMonth = monthCovered === currentMonthName.toLowerCase();
+        const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
+        if (!paymentDate) {
+            return false;
+        }
+        const isCurrentYear = paymentDate.getFullYear() === currentYear;
+        return isCurrentMonth && isCurrentYear && p.status === 'approved';
+    });
+
     const totalIncome = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
     document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
-    
+
     const pending = payments.filter(p => p.status === 'pending');
     const pendingAmount = pending.reduce((sum, p) => sum + (p.amount || 0), 0);
     document.getElementById('pendingAmount').textContent = formatCurrency(pendingAmount);
-    
-    const overdue = payments.filter(p => p.status === 'overdue');
-    const overdueAmount = overdue.reduce((sum, p) => sum + (p.amount || 0), 0);
-    document.getElementById('overdueAmount').textContent = formatCurrency(overdueAmount);
+
+    const rejected = payments.filter(p => p.status === 'rejected');
+    const rejectedAmount = rejected.reduce((sum, p) => sum + (p.amount || 0), 0);
+    document.getElementById('overdueAmount').textContent = formatCurrency(rejectedAmount);
 }
 
 // Cargar jugadores para el select
