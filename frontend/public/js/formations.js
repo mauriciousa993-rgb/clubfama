@@ -681,7 +681,7 @@ async function loadFormations() {
         const typeFilter = document.getElementById('typeFilter')?.value || 'all';
         const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
         
-        const response = await fetch(`/api/formations?type=${typeFilter}&category=${categoryFilter}`, {
+        const response = await fetch(`${API_URL}/formations?type=${typeFilter}&category=${categoryFilter}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -806,7 +806,7 @@ function closeFormationModal() {
 // Ver formación (preview)
 async function viewFormation(id) {
     try {
-        const response = await fetch(`/api/formations/${id}`, {
+        const response = await fetch(`${API_URL}/formations/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -828,7 +828,7 @@ async function viewFormation(id) {
 // Editar formación
 async function editFormation(id) {
     try {
-        const response = await fetch(`/api/formations/${id}`, {
+        const response = await fetch(`${API_URL}/formations/${id}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -1009,7 +1009,7 @@ async function confirmDelete() {
     if (!deleteFormationId) return;
     
     try {
-        const response = await fetch(`/api/formations/${deleteFormationId}`, {
+        const response = await fetch(`${API_URL}/formations/${deleteFormationId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
