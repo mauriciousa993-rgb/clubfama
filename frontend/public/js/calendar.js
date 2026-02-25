@@ -2,6 +2,22 @@
 let currentDate = new Date();
 let events = [];
 
+// Guardar eventos en localStorage
+function saveEvents() {
+    localStorage.setItem('clubEvents', JSON.stringify(events));
+}
+
+// Cargar eventos desde localStorage
+function loadEventsFromStorage() {
+    const savedEvents = localStorage.getItem('clubEvents');
+    if (savedEvents) {
+        events = JSON.parse(savedEvents);
+        return true;
+    }
+    return false;
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     if (!checkAuth()) return;
     
@@ -138,47 +154,53 @@ function nextMonth() {
 // Cargar eventos
 async function loadEvents() {
     try {
-        // Simulación de eventos (en producción vendrían de la API)
-        events = [
-            {
-                _id: '1',
-                title: 'Entrenamiento Sub-16',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25).toISOString(),
-                time: '16:00',
-                type: 'training',
-                category: 'juvenil',
-
-                location: 'Gimnasio Principal',
-                description: 'Entrenamiento de preparación física'
-            },
-            {
-                _id: '2',
-                title: 'Partido Amistoso',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 28).toISOString(),
-                time: '10:00',
-                type: 'game',
-                category: 'elite',
-
-                location: 'Cancha Municipal',
-                description: 'Partido contra Club Deportivo'
-            },
-            {
-                _id: '3',
-                title: 'Torneo Regional',
-                date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 2).toISOString(),
-                time: '08:00',
-                type: 'tournament',
-                category: 'todas',
-                location: 'Coliseo',
-                description: 'Torneo regional de baloncesto'
-            }
-        ];
+        // Intentar cargar desde localStorage primero
+        const hasSavedEvents = loadEventsFromStorage();
+        
+        // Si no hay eventos guardados, usar eventos de ejemplo
+        if (!hasSavedEvents) {
+            events = [
+                {
+                    _id: '1',
+                    title: 'Entrenamiento Sub-16',
+                    date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25).toISOString(),
+                    time: '16:00',
+                    type: 'training',
+                    category: 'juvenil',
+                    location: 'Gimnasio Principal',
+                    description: 'Entrenamiento de preparación física'
+                },
+                {
+                    _id: '2',
+                    title: 'Partido Amistoso',
+                    date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 28).toISOString(),
+                    time: '10:00',
+                    type: 'game',
+                    category: 'elite',
+                    location: 'Cancha Municipal',
+                    description: 'Partido contra Club Deportivo'
+                },
+                {
+                    _id: '3',
+                    title: 'Torneo Regional',
+                    date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 2).toISOString(),
+                    time: '08:00',
+                    type: 'tournament',
+                    category: 'todas',
+                    location: 'Coliseo',
+                    description: 'Torneo regional de baloncesto'
+                }
+            ];
+            // Guardar eventos de ejemplo en localStorage
+            saveEvents();
+        }
         
         renderEventsList();
     } catch (error) {
         console.error('Error loading events:', error);
     }
 }
+
 
 // Renderizar lista de eventos
 function renderEventsList() {
@@ -313,6 +335,9 @@ async function handleEventSubmit(e) {
         const message = dates.length > 1 
             ? `${dates.length} eventos creados exitosamente` 
             : 'Evento creado exitosamente';
+        
+        // Guardar eventos en localStorage
+        saveEvents();
         
         showToast(message, 'success');
         closeEventModal();
