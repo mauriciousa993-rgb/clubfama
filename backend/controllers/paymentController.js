@@ -191,10 +191,31 @@ const getAllPayments = async (req, res) => {
   }
 };
 
+// @desc    Eliminar pago (Admin)
+// @route   DELETE /api/payments/:id
+// @access  Private (Admin)
+const deletePayment = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+
+    if (!payment) {
+      return res.status(404).json({ message: 'Pago no encontrado' });
+    }
+
+    await payment.deleteOne();
+
+    res.json({ message: 'Pago eliminado' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al eliminar el pago' });
+  }
+};
+
 module.exports = {
   uploadPaymentReceipt,
   getMyPayments,
   getPendingPayments,
   updatePaymentStatus,
-  getAllPayments
+  getAllPayments,
+  deletePayment
 };
