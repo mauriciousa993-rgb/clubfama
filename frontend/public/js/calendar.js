@@ -18,14 +18,15 @@ function loadEventsFromStorage() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     if (!checkAuth()) return;
     
     // Initialize mobile menu
     initMobileMenu();
     
+    // Cargar eventos primero, luego renderizar
+    await loadEvents();
     renderCalendar();
-    loadEvents();
     
     // Formulario de evento
     const eventForm = document.getElementById('eventForm');
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         eventForm.addEventListener('submit', handleEventSubmit);
     }
 });
+
 
 
 // Renderizar calendario
@@ -141,15 +143,16 @@ function getEventsForDay(year, month, day) {
 function previousMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
     renderCalendar();
-    loadEvents();
+    renderEventsList();
 }
 
 // Mes siguiente
 function nextMonth() {
     currentDate.setMonth(currentDate.getMonth() + 1);
     renderCalendar();
-    loadEvents();
+    renderEventsList();
 }
+
 
 // Cargar eventos
 async function loadEvents() {
@@ -157,41 +160,9 @@ async function loadEvents() {
         // Intentar cargar desde localStorage primero
         const hasSavedEvents = loadEventsFromStorage();
         
-        // Si no hay eventos guardados, usar eventos de ejemplo
+        // Si no hay eventos guardados, iniciar con array vacío (sin eventos de ejemplo)
         if (!hasSavedEvents) {
-            events = [
-                {
-                    _id: '1',
-                    title: 'Entrenamiento Sub-16',
-                    date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 25).toISOString(),
-                    time: '16:00',
-                    type: 'training',
-                    category: 'juvenil',
-                    location: 'Gimnasio Principal',
-                    description: 'Entrenamiento de preparación física'
-                },
-                {
-                    _id: '2',
-                    title: 'Partido Amistoso',
-                    date: new Date(currentDate.getFullYear(), currentDate.getMonth(), 28).toISOString(),
-                    time: '10:00',
-                    type: 'game',
-                    category: 'elite',
-                    location: 'Cancha Municipal',
-                    description: 'Partido contra Club Deportivo'
-                },
-                {
-                    _id: '3',
-                    title: 'Torneo Regional',
-                    date: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 2).toISOString(),
-                    time: '08:00',
-                    type: 'tournament',
-                    category: 'todas',
-                    location: 'Coliseo',
-                    description: 'Torneo regional de baloncesto'
-                }
-            ];
-            // Guardar eventos de ejemplo en localStorage
+            events = [];
             saveEvents();
         }
         
@@ -200,6 +171,7 @@ async function loadEvents() {
         console.error('Error loading events:', error);
     }
 }
+
 
 
 // Renderizar lista de eventos
