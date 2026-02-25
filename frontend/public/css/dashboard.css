@@ -122,11 +122,12 @@
     position: fixed;
     height: 100vh;
     height: 100dvh;
-    z-index: 100;
+    z-index: 200;
     transition: transform 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
 }
+
 
 .sidebar-header {
     padding: 25px 20px;
@@ -600,11 +601,12 @@ tr:hover {
     .sidebar {
         transform: translateX(-100%);
         width: 280px;
-        z-index: 101;
+        z-index: 200;
         top: 0;
         height: 100vh;
         height: 100dvh;
     }
+
     
     .sidebar.active {
         transform: translateX(0);
