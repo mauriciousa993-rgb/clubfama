@@ -8,19 +8,30 @@ const uploadPaymentReceipt = async (req, res) => {
   try {
     const { amount, month_covered } = req.body;
 
+    console.log('=== INICIO SUBIDA DE COMPROBANTE ===');
+    console.log('Body recibido:', req.body);
+    console.log('File recibido:', req.file);
+    console.log('Headers:', req.headers['content-type']);
+
     if (!amount || !month_covered) {
+      console.log('Error: Monto o mes faltante');
       return res.status(400).json({ message: 'Monto y mes son requeridos' });
     }
 
     // Verificar si hay archivo subido
     if (!req.file) {
-      return res.status(400).json({ message: 'El comprobante de pago es requerido' });
+      console.log('Error: No se recibió archivo');
+      return res.status(400).json({ 
+        message: 'El comprobante de pago es requerido',
+        debug: 'No se detectó archivo en la solicitud. Asegúrate de enviar el archivo con el campo "receipt"'
+      });
     }
 
-    console.log('Archivo recibido:', req.file);
+    console.log('Archivo recibido correctamente:', req.file);
     console.log('Usuario:', req.user._id);
     console.log('Monto:', amount);
     console.log('Mes:', month_covered);
+
 
     // Determinar la URL del archivo según el tipo de almacenamiento
     const isCloudinaryConfigured = 
@@ -55,12 +66,20 @@ const uploadPaymentReceipt = async (req, res) => {
     
     res.status(201).json(savedPayment);
   } catch (error) {
-    console.error('Error detallado al subir comprobante:', error);
+    console.error('========== ERROR DETALLADO AL SUBIR COMPROBANTE ==========');
+    console.error('Mensaje:', error.message);
+    console.error('Stack:', error.stack);
+    console.error('Código:', error.code);
+    console.error('Tipo:', error.name);
+    console.error('===========================================================');
+    
     res.status(500).json({ 
       message: 'Error al subir el comprobante',
-      error: error.message 
+      error: error.message,
+      code: error.code || 'UNKNOWN_ERROR'
     });
   }
+
 };
 
 

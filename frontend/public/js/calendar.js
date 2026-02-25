@@ -242,6 +242,35 @@ function closeEventModal() {
     document.getElementById('eventModal').classList.remove('active');
 }
 
+// Generar fechas recurrentes
+function generateRecurringDates(startDate, recurrence, endDate) {
+    const dates = [];
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
+    
+    let current = new Date(start);
+    
+    while (current <= end) {
+        dates.push(new Date(current).toISOString().split('T')[0]);
+        
+        switch (recurrence) {
+            case 'daily':
+                current.setDate(current.getDate() + 1);
+                break;
+            case 'weekly':
+                current.setDate(current.getDate() + 7);
+                break;
+            case 'monthly':
+                current.setMonth(current.getMonth() + 1);
+                break;
+            default:
+                return dates;
+        }
+    }
+    
+    return dates;
+}
+
 // Manejar submit del formulario
 async function handleEventSubmit(e) {
     e.preventDefault();
@@ -253,24 +282,39 @@ async function handleEventSubmit(e) {
         type: document.getElementById('eventType').value,
         category: document.getElementById('eventCategory').value,
         location: document.getElementById('eventLocation').value,
-        description: document.getElementById('eventDescription').value
+        description: document.getElementById('eventDescription').value,
+        recurrence: document.getElementById('eventRecurrence').value,
+        recurrenceEnd: document.getElementById('eventRecurrenceEnd').value
     };
     
     try {
-        // En producción, enviar a la API
-        // const response = await fetch(`${API_URL}/events`, {
-        //     method: 'POST',
-        //     headers: getAuthHeaders(),
-        //     body: JSON.stringify(eventData)
-        // });
+        // Generar eventos según recurrencia
+        const recurrence = eventData.recurrence;
+        const dates = recurrence !== 'none' 
+            ? generateRecurringDates(eventData.date, recurrence, eventData.recurrenceEnd)
+            : [eventData.date];
         
-        // Simulación de éxito
-        events.push({
-            _id: generateId(),
-            ...eventData
+        // Crear eventos para cada fecha
+        dates.forEach(date => {
+            events.push({
+                _id: generateId(),
+                title: eventData.title,
+                date: date,
+                time: eventData.time,
+                type: eventData.type,
+                category: eventData.category,
+                location: eventData.location,
+                description: eventData.description,
+                recurrence: recurrence,
+                parentEvent: dates.length > 1 ? dates[0] : null
+            });
         });
         
-        showToast('Evento creado exitosamente', 'success');
+        const message = dates.length > 1 
+            ? `${dates.length} eventos creados exitosamente` 
+            : 'Evento creado exitosamente';
+        
+        showToast(message, 'success');
         closeEventModal();
         renderCalendar();
         renderEventsList();
