@@ -67,6 +67,10 @@ if (process.env.NODE_ENV !== 'production') {
 // Servir archivos subidos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Servir archivos de templates (imágenes de cancha)
+app.use('/templates', express.static(path.join(__dirname, '../templates')));
+
+
 // Rutas API
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));

@@ -111,17 +111,24 @@
                 
                 <div class="viewer-court-container">
                     <div id="viewerCourt" class="basketball-court">
-                        <!-- Cancha SVG mejorada -->
+                        <!-- Cancha SVG con imagen de fondo -->
                         <svg viewBox="0 0 500 470" class="court-svg" preserveAspectRatio="xMidYMid slice">
                             <defs>
-                                <linearGradient id="courtGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#c17f59;stop-opacity:1" />
-                                </linearGradient>
+                                <pattern id="courtImage" patternUnits="userSpaceOnUse" width="500" height="470">
+                                    <image href="/templates/%E2%80%94Pngtree%E2%80%94basketball%20half%20court%20game%20basketball_9164453.jpg" 
+                                           x="0" y="0" width="500" height="470" 
+                                           preserveAspectRatio="xMidYMid slice"/>
+                                </pattern>
+                                <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+                                </filter>
                             </defs>
                             
-                            <rect x="0" y="0" width="500" height="470" fill="url(#courtGradient)"/>
-                            <path d="M 50,50 L 450,50 L 450,140 Q 250,180 50,140 Z" fill="#b8724d" stroke="none"/>
+                            <!-- Fondo de cancha con imagen -->
+                            <rect x="0" y="0" width="500" height="470" fill="url(#courtImage)"/>
+                            
+                            <!-- Líneas de la cancha superpuestas -->
+                            <path d="M 50,50 L 450,50 L 450,140 Q 250,180 50,140 Z" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
                             <rect x="50" y="50" width="400" height="370" fill="none" stroke="white" stroke-width="3"/>
                             <line x1="50" y1="235" x2="450" y2="235" stroke="white" stroke-width="3"/>
                             <circle cx="250" cy="235" r="60" fill="none" stroke="white" stroke-width="3"/>

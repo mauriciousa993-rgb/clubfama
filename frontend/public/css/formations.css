@@ -644,13 +644,14 @@
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
-    background: #c17f59;
+    background: transparent;
     border-radius: 8px;
     overflow: visible;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     aspect-ratio: 500/470;
     height: auto;
 }
+
 
 /* Fallback for browsers without aspect-ratio support */
 @supports not (aspect-ratio: 500/470) {
@@ -688,9 +689,10 @@
     width: 100%;
     height: 100%;
     display: block;
+    border-radius: 8px;
 }
 
-/* Ensure SVG lines are crisp */
+/* Ensure SVG lines are crisp and visible over image */
 .court-svg line,
 .court-svg circle,
 .court-svg path,
@@ -698,6 +700,14 @@
     vector-effect: non-scaling-stroke;
     shape-rendering: geometricPrecision;
 }
+
+/* Make court lines more visible over the image background */
+.court-svg line,
+.court-svg circle,
+.court-svg path {
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
 
 
 .players-layer {
