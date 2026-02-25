@@ -139,6 +139,67 @@ function createPlayerElement(number, position) {
     };
 }
 
+// Auto-save con debounce
+let autoSaveTimeout = null;
+let lastSavedPositions = null;
+
+function debouncedAutoSave() {
+    // Cancelar timeout anterior
+    if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+    }
+    
+    // Mostrar indicador de "Guardando..."
+    showAutoSaveIndicator('Guardando...');
+    
+    // Guardar después de 300ms de inactividad
+    autoSaveTimeout = setTimeout(() => {
+        saveCurrentStepPositions();
+        const currentPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
+        
+        if (currentPositions !== lastSavedPositions) {
+            lastSavedPositions = currentPositions;
+            showAutoSaveIndicator('Guardado ✓');
+        } else {
+            hideAutoSaveIndicator();
+        }
+    }, 300);
+}
+
+function showAutoSaveIndicator(text) {
+    let indicator = document.getElementById('autoSaveIndicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'autoSaveIndicator';
+        indicator.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 10000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        `;
+        document.body.appendChild(indicator);
+    }
+    indicator.textContent = text;
+    indicator.style.opacity = '1';
+    indicator.style.transform = 'translateY(0)';
+}
+
+function hideAutoSaveIndicator() {
+    const indicator = document.getElementById('autoSaveIndicator');
+    if (indicator) {
+        indicator.style.opacity = '0';
+        indicator.style.transform = 'translateY(10px)';
+    }
+}
+
 // Hacer jugador arrastrable
 function makeDraggable(element, playerNumber) {
     let isDragging = false;
@@ -183,6 +244,9 @@ function makeDraggable(element, playerNumber) {
             player.x = (newX / rect.width) * 100;
             player.y = (newY / rect.height) * 100;
         }
+        
+        // Auto-save durante el arrastre (con debounce)
+        debouncedAutoSave();
     });
     
     document.addEventListener('mouseup', () => {
@@ -190,10 +254,14 @@ function makeDraggable(element, playerNumber) {
             isDragging = false;
             element.classList.remove('dragging');
             element.style.cursor = 'grab';
+            // Guardar inmediatamente al soltar
             saveCurrentStepPositions();
+            showAutoSaveIndicator('Guardado ✓');
+            lastSavedPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
         }
     });
 }
+
 
 // Toggle balón para un jugador
 function toggleBall(playerNumber) {
@@ -218,8 +286,13 @@ function toggleBall(playerNumber) {
     
     // Actualizar posición del balón visual
     updateBasketballPosition();
+    
+    // Auto-save al cambiar el balón
     saveCurrentStepPositions();
+    showAutoSaveIndicator('Guardado ✓');
+    lastSavedPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
 }
+
 
 // Actualizar posición visual del balón
 function updateBasketballPosition() {
