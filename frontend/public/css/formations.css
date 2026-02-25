@@ -408,23 +408,33 @@
 .basketball-court {
     position: relative;
     width: 100%;
+    height: 470px;
     max-width: 500px;
     margin: 0 auto;
-    aspect-ratio: 500/470;
     background: #c17f59;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-/* Fallback para navegadores sin aspect-ratio */
-@supports not (aspect-ratio: 500/470) {
-    .basketball-court::before {
-        content: '';
-        display: block;
-        padding-top: 94%;
+/* Responsive height */
+@media (max-width: 550px) {
+    .basketball-court {
+        height: auto;
+        aspect-ratio: 500/470;
     }
 }
+
+@supports not (aspect-ratio: 500/470) {
+    @media (max-width: 550px) {
+        .basketball-court::before {
+            content: '';
+            display: block;
+            padding-top: 94%;
+        }
+    }
+}
+
 
 .court-svg {
     position: absolute;

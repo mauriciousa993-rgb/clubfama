@@ -825,17 +825,49 @@ async function saveFormation() {
     // Guardar paso actual antes de enviar
     saveCurrentStepPositions();
     
+    // Asegurar que hay al menos un paso
+    if (!currentFormation.steps || currentFormation.steps.length === 0) {
+        // Crear paso inicial con posiciones actuales
+        const initialPositions = players.map(p => ({
+            player_number: p.number,
+            position_x: p.x,
+            position_y: p.y,
+            has_ball: p.hasBall,
+            action: p.hasBall ? 'dribble' : 'move',
+            action_description: ''
+        }));
+        
+        currentFormation.steps = [{
+            step_number: 1,
+            duration: 2000,
+            description: 'Posición inicial',
+            player_movements: initialPositions,
+            ball_position: null
+        }];
+    }
+    
+    // Asegurar que cada paso tenga player_movements válido
+    currentFormation.steps = currentFormation.steps.map((step, index) => ({
+        step_number: step.step_number || (index + 1),
+        duration: step.duration || 2000,
+        description: step.description || `Paso ${index + 1}`,
+        player_movements: step.player_movements || [],
+        ball_position: step.ball_position || null
+    }));
+    
     // Preparar datos
     const formationData = {
         name: name,
         code: code,
-        play_type: document.getElementById('formationType').value,
-        team_category: document.getElementById('formationCategory').value,
-        description: document.getElementById('formationDescription').value,
+        play_type: document.getElementById('formationType').value || 'ataque',
+        team_category: document.getElementById('formationCategory').value || 'all',
+        description: document.getElementById('formationDescription').value || '',
         total_steps: currentFormation.steps.length,
         steps: currentFormation.steps,
         starting_positions: currentFormation.steps[0]?.player_movements || []
     };
+    
+    console.log('Guardando sistema:', formationData);
     
     try {
         const url = currentFormation._id 
@@ -853,10 +885,14 @@ async function saveFormation() {
             body: JSON.stringify(formationData)
         });
         
+        const responseData = await response.json();
+        
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Error guardando sistema');
+            console.error('Error del servidor:', responseData);
+            throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
         }
+        
+        console.log('Sistema guardado:', responseData);
         
         showNotification(
             currentFormation._id ? 'Sistema actualizado correctamente' : 'Sistema creado correctamente',
@@ -867,10 +903,11 @@ async function saveFormation() {
         loadFormations();
         
     } catch (error) {
-        console.error('Error:', error);
-        showNotification(error.message || 'Error al guardar el sistema', 'error');
+        console.error('Error completo:', error);
+        showNotification(error.message || 'Error al guardar el sistema. Revisa la consola para más detalles.', 'error');
     }
 }
+
 
 // Confirmar eliminación
 function confirmDeleteFormation(id) {
