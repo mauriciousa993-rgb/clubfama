@@ -249,8 +249,11 @@ const uploadPhoto = async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Guardar la URL relativa de la foto
-    const photoUrl = `/uploads/profiles/${req.file.filename}`;
+    // Obtener la URL de la foto (Cloudinary path o local filename)
+    // Cuando se usa Cloudinary, req.file.path contiene la URL completa
+    // Cuando es local, usamos el filename
+    const photoUrl = req.file.path || `/uploads/profiles/${req.file.filename}`;
+    
     user.photo_url = photoUrl;
     user.updated_at = Date.now();
     await user.save();
@@ -264,6 +267,7 @@ const uploadPhoto = async (req, res) => {
     res.status(500).json({ message: 'Error al subir la foto' });
   }
 };
+
 
 // @desc    Eliminar usuario (solo admin)
 // @route   DELETE /api/auth/users/:id

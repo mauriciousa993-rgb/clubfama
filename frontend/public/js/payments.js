@@ -5,8 +5,10 @@ let players = [];
 document.addEventListener('DOMContentLoaded', function() {
     if (!checkAuth()) return;
     
+    initMobileMenu();
     loadPayments();
     loadPlayersForSelect();
+
     
     // Formulario de pago
     const paymentForm = document.getElementById('paymentForm');

@@ -202,7 +202,7 @@ function renderEventsList() {
         const month = eventDate.toLocaleDateString('es-ES', { month: 'short' });
         
         return `
-            <div class="event-card ${event.type}">
+            <div class="event-card ${event.type}" data-event-id="${event._id}">
                 <div class="event-time">
                     <div class="time">${event.time || '--:--'}</div>
                     <div class="ampm">${day} ${month}</div>
@@ -212,17 +212,78 @@ function renderEventsList() {
                     <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
                     <p><i class="fas fa-users"></i> ${capitalize(event.category || 'Todas')}</p>
                 </div>
+                <div class="event-actions">
+                    <button class="btn-action btn-edit" onclick="editEvent('${event._id}')" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="deleteEvent('${event._id}')" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
 }
 
+// Variable para saber si estamos editando
+let editingEventId = null;
+
+// Editar evento
+function editEvent(eventId) {
+    const event = events.find(e => e._id === eventId);
+    if (!event) return;
+    
+    editingEventId = eventId;
+    
+    // Llenar el formulario con los datos del evento
+    document.getElementById('eventTitle').value = event.title;
+    document.getElementById('eventDate').value = event.date;
+    document.getElementById('eventTime').value = event.time || '';
+    document.getElementById('eventType').value = event.type;
+    document.getElementById('eventCategory').value = event.category || 'all';
+    document.getElementById('eventLocation').value = event.location || '';
+    document.getElementById('eventDescription').value = event.description || '';
+    document.getElementById('eventRecurrence').value = event.recurrence || 'none';
+    document.getElementById('eventRecurrenceEnd').value = event.recurrenceEnd || '';
+    
+    // Cambiar el título del modal
+    document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Evento';
+    
+    // Mostrar el modal
+    document.getElementById('eventModal').classList.add('active');
+}
+
+// Eliminar evento
+function deleteEvent(eventId) {
+    const event = events.find(e => e._id === eventId);
+    if (!event) return;
+    
+    if (!confirm(`¿Estás seguro de eliminar el evento "${event.title}"?`)) {
+        return;
+    }
+    
+    // Eliminar el evento del array
+    events = events.filter(e => e._id !== eventId);
+    
+    // Guardar en localStorage
+    saveEvents();
+    
+    // Actualizar la vista
+    renderCalendar();
+    renderEventsList();
+    
+    showToast('Evento eliminado correctamente', 'success');
+}
+
+
 // Mostrar modal de evento
 function showAddEventModal() {
+    editingEventId = null; // Resetear el modo edición
     document.getElementById('eventForm').reset();
     document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-calendar-plus"></i> Nuevo Evento';
     document.getElementById('eventModal').classList.add('active');
 }
+
 
 // Mostrar modal para día específico
 function showAddEventModalForDay(year, month, day) {
@@ -282,7 +343,34 @@ async function handleEventSubmit(e) {
     };
     
     try {
-        // Generar eventos según recurrencia
+        // Si estamos editando, actualizar el evento existente
+        if (editingEventId) {
+            const eventIndex = events.findIndex(e => e._id === editingEventId);
+            if (eventIndex !== -1) {
+                events[eventIndex] = {
+                    ...events[eventIndex],
+                    title: eventData.title,
+                    date: eventData.date,
+                    time: eventData.time,
+                    type: eventData.type,
+                    category: eventData.category,
+                    location: eventData.location,
+                    description: eventData.description,
+                    recurrence: eventData.recurrence,
+                    recurrenceEnd: eventData.recurrenceEnd
+                };
+                
+                saveEvents();
+                showToast('Evento actualizado correctamente', 'success');
+                closeEventModal();
+                renderCalendar();
+                renderEventsList();
+                editingEventId = null;
+                return;
+            }
+        }
+        
+        // Generar eventos según recurrencia (solo para nuevos eventos)
         const recurrence = eventData.recurrence;
         const dates = recurrence !== 'none' 
             ? generateRecurringDates(eventData.date, recurrence, eventData.recurrenceEnd)
@@ -318,6 +406,11 @@ async function handleEventSubmit(e) {
         
     } catch (error) {
         console.error('Error saving event:', error);
-        showToast('Error al crear evento', 'error');
+        showToast('Error al guardar evento', 'error');
     }
+}
+
+// Generar ID único
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }

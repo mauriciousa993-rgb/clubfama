@@ -5,6 +5,7 @@ let editingPlayerId = null;
 document.addEventListener('DOMContentLoaded', function() {
     if (!checkAuth()) return;
     
+    initMobileMenu();
     loadPlayers();
     
     // Formulario de jugador
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         photoInput.addEventListener('change', handlePhotoPreview);
     }
 });
+
 
 // Cargar jugadores
 async function loadPlayers() {

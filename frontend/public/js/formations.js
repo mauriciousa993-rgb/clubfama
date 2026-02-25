@@ -954,12 +954,13 @@ async function saveFormation() {
     
     try {
         const url = currentFormation._id 
-            ? `/api/formations/${currentFormation._id}`
-            : '/api/formations';
+            ? `${API_URL}/formations/${currentFormation._id}`
+            : `${API_URL}/formations`;
         
         const method = currentFormation._id ? 'PUT' : 'POST';
         
         const response = await fetch(url, {
+
             method: method,
             headers: {
                 'Content-Type': 'application/json',
