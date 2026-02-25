@@ -139,8 +139,8 @@ async function loadStats() {
             document.getElementById('pendingPayments').textContent = pendingPayments.length;
         }
         
-        // Eventos (simulados por ahora)
-        document.getElementById('upcomingEvents').textContent = '3';
+        // El contador de eventos se actualiza en loadUpcomingEvents()
+
         
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -184,50 +184,68 @@ async function loadRecentPayments() {
     }
 }
 
-// Cargar próximos eventos
+// Cargar próximos eventos desde localStorage
 async function loadUpcomingEvents() {
     const eventsList = document.getElementById('eventsList');
     if (!eventsList) return;
     
-    // Datos de ejemplo (simulados)
-    const events = [
-        {
-            day: '25',
-            month: 'Feb',
-            title: 'Entrenamiento Sub-16',
-            time: '16:00 - 18:00',
-            location: 'Gimnasio Principal'
-        },
-        {
-            day: '28',
-            month: 'Feb',
-            title: 'Partido Amistoso',
-            time: '10:00 - 12:00',
-            location: 'Cancha Municipal'
-        },
-        {
-            day: '02',
-            month: 'Mar',
-            title: 'Torneo Regional',
-            time: '08:00 - 18:00',
-            location: 'Coliseo'
-        }
-    ];
+    // Cargar eventos desde localStorage
+    const savedEvents = localStorage.getItem('clubEvents');
+    let events = [];
     
-    eventsList.innerHTML = events.map(event => `
-        <div class="event-item">
-            <div class="event-date">
-                <div class="day">${event.day}</div>
-                <div class="month">${event.month}</div>
+    if (savedEvents) {
+        events = JSON.parse(savedEvents);
+    }
+    
+    // Filtrar eventos futuros (desde hoy en adelante)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const upcomingEvents = events
+        .filter(event => {
+            const eventDate = new Date(event.date);
+            return eventDate >= today;
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 5); // Mostrar máximo 5 eventos próximos
+    
+    if (upcomingEvents.length === 0) {
+        eventsList.innerHTML = '<p class="no-events">No hay eventos próximos</p>';
+        // Actualizar contador a 0
+        const upcomingEventsCount = document.getElementById('upcomingEvents');
+        if (upcomingEventsCount) {
+            upcomingEventsCount.textContent = '0';
+        }
+        return;
+    }
+    
+    // Actualizar contador
+    const upcomingEventsCount = document.getElementById('upcomingEvents');
+    if (upcomingEventsCount) {
+        upcomingEventsCount.textContent = upcomingEvents.length.toString();
+    }
+    
+    eventsList.innerHTML = upcomingEvents.map(event => {
+        const eventDate = new Date(event.date);
+        const day = eventDate.getDate().toString().padStart(2, '0');
+        const month = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+        
+        return `
+            <div class="event-item">
+                <div class="event-date">
+                    <div class="day">${day}</div>
+                    <div class="month">${month}</div>
+                </div>
+                <div class="event-info">
+                    <h4>${event.title}</h4>
+                    <p><i class="fas fa-clock"></i> ${event.time || '--:--'}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
+                </div>
             </div>
-            <div class="event-info">
-                <h4>${event.title}</h4>
-                <p><i class="fas fa-clock"></i> ${event.time}</p>
-                <p><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
+
 
 // Cargar pagos pendientes de verificación (Admin)
 async function loadPendingPayments() {
