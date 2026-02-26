@@ -29,9 +29,10 @@ const eventSchema = new mongoose.Schema({
   },
   team_category: {
     type: String,
-    enum: ['femenino', 'mini', 'juvenil', 'elite', 'all'],
+    enum: ['infantil', 'mini', 'juvenil', 'elite', 'all'],
     default: 'all'
   },
+
   recurrence: {
     type: String,
     enum: ['none', 'daily', 'weekly', 'monthly'],

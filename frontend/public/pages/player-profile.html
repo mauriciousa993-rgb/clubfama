@@ -151,7 +151,7 @@
                         <label>Categoría del Equipo</label>
                         <select id="team_category" name="team_category" required>
                             <option value="">Seleccionar categoría</option>
-                            <option value="femenino">Femenino</option>
+                            <option value="infantil">Infantil</option>
                             <option value="mini">Mini</option>
                             <option value="juvenil">Juvenil</option>
                             <option value="elite">Elite</option>
@@ -170,25 +170,61 @@
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Número de Documento</label>
-                            <input type="text" id="document_number" name="document_number">
-                        </div>
+                    <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" id="document_number" name="document_number">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha de Nacimiento</label>
-                            <input type="date" id="birth_date" name="birth_date">
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono</label>
-                            <input type="tel" id="phone" name="phone">
-                        </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Expedición</label>
+                        <input type="date" id="document_issue_date" name="document_issue_date">
                     </div>
                     <div class="form-group">
-                        <label>Dirección de Casa</label>
-                        <textarea id="address" name="address" rows="2"></textarea>
+                        <label>Lugar de Expedición</label>
+                        <input type="text" id="document_issue_place" name="document_issue_place" placeholder="Ciudad de expedición">
                     </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" id="birth_date" name="birth_date">
+                    </div>
+                    <div class="form-group">
+                        <label>Género</label>
+                        <select id="gender" name="gender">
+                            <option value="">Seleccionar</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nacionalidad</label>
+                        <input type="text" id="nationality" name="nationality" placeholder="Ej: Colombiana">
+                    </div>
+                    <div class="form-group">
+                        <label>Departamento de Nacimiento</label>
+                        <input type="text" id="birth_department" name="birth_department" placeholder="Ej: Valle del Cauca">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Municipio de Nacimiento</label>
+                        <input type="text" id="birth_municipality" name="birth_municipality" placeholder="Ej: Cali">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección de Casa</label>
+                    <textarea id="address" name="address" rows="2"></textarea>
+                </div>
+
                 </div>
 
                 <!-- Información Médica -->
@@ -202,12 +238,43 @@
                         <label>Alergias</label>
                         <textarea id="allergies" name="allergies" rows="2" placeholder="Alergias conocidas..."></textarea>
                     </div>
+                <div class="form-group">
+                    <label>Enfermedades o Condiciones</label>
+                    <textarea id="diseases" name="diseases" rows="2" placeholder="Enfermedades crónicas, condiciones especiales..."></textarea>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label>Enfermedades o Condiciones</label>
-                        <textarea id="diseases" name="diseases" rows="2" placeholder="Enfermedades crónicas, condiciones especiales..."></textarea>
+                        <label>Estatura (cm)</label>
+                        <input type="text" id="height" name="height" placeholder="Ej: 175">
                     </div>
                     <div class="form-group">
-                        <label>Contacto de Emergencia</label>
+                        <label>Peso (kg)</label>
+                        <input type="text" id="weight" name="weight" placeholder="Ej: 70">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>EPS</label>
+                        <input type="text" id="eps" name="eps" placeholder="Nombre de la EPS">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Sangre</label>
+                        <select id="blood_type" name="blood_type">
+                            <option value="">Seleccionar</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contacto de Emergencia</label>
+
                         <input type="text" id="emergency_name" placeholder="Nombre" style="margin-bottom: 5px;">
                         <input type="tel" id="emergency_phone" placeholder="Teléfono" style="margin-bottom: 5px;">
                         <input type="text" id="emergency_relationship" placeholder="Parentesco">
@@ -317,13 +384,24 @@
                     document.getElementById('team_category').value = user.team_category || '';
                     document.getElementById('document_type').value = user.document_type || '';
                     document.getElementById('document_number').value = user.document_number || '';
-
+                    document.getElementById('document_issue_date').value = user.document_issue_date ? user.document_issue_date.split('T')[0] : '';
+                    document.getElementById('document_issue_place').value = user.document_issue_place || '';
                     document.getElementById('birth_date').value = user.birth_date ? user.birth_date.split('T')[0] : '';
+                    document.getElementById('birth_department').value = user.birth_department || '';
+                    document.getElementById('birth_municipality').value = user.birth_municipality || '';
+                    document.getElementById('nationality').value = user.nationality || '';
+                    document.getElementById('gender').value = user.gender || '';
+
                     document.getElementById('phone').value = user.phone || '';
                     document.getElementById('address').value = user.address || '';
                     document.getElementById('medical_history').value = user.medical_history || '';
                     document.getElementById('allergies').value = user.allergies || '';
                     document.getElementById('diseases').value = user.diseases || '';
+                    document.getElementById('height').value = user.height || '';
+                    document.getElementById('weight').value = user.weight || '';
+                    document.getElementById('eps').value = user.eps || '';
+                    document.getElementById('blood_type').value = user.blood_type || '';
+
                     
                     if (user.emergency_contact) {
                         document.getElementById('emergency_name').value = user.emergency_contact.name || '';
@@ -363,14 +441,24 @@
                     name: document.getElementById('name').value,
                     team_category: document.getElementById('team_category').value,
                     document_type: document.getElementById('document_type').value,
-
                     document_number: document.getElementById('document_number').value,
+                    document_issue_date: document.getElementById('document_issue_date').value,
+                    document_issue_place: document.getElementById('document_issue_place').value,
                     birth_date: document.getElementById('birth_date').value,
+                    birth_department: document.getElementById('birth_department').value,
+                    birth_municipality: document.getElementById('birth_municipality').value,
+                    nationality: document.getElementById('nationality').value,
+                    gender: document.getElementById('gender').value,
                     phone: document.getElementById('phone').value,
                     address: document.getElementById('address').value,
                     medical_history: document.getElementById('medical_history').value,
                     allergies: document.getElementById('allergies').value,
                     diseases: document.getElementById('diseases').value,
+                    height: document.getElementById('height').value,
+                    weight: document.getElementById('weight').value,
+                    eps: document.getElementById('eps').value,
+                    blood_type: document.getElementById('blood_type').value,
+
                     emergency_contact: {
                         name: document.getElementById('emergency_name').value,
                         phone: document.getElementById('emergency_phone').value,

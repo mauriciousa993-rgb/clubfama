@@ -158,12 +158,14 @@ const updateProfile = async (req, res) => {
 
     // Campos permitidos para actualizar
     const allowedFields = [
-      'name', 'team_category', 'document_type', 'document_number', 'birth_date', 'address', 'phone',
-      'medical_history', 'allergies', 'diseases', 'emergency_contact',
+      'name', 'team_category', 'document_type', 'document_number', 'document_issue_date', 'document_issue_place',
+      'birth_date', 'birth_department', 'birth_municipality', 'nationality', 'gender', 'address', 'phone',
+      'medical_history', 'allergies', 'diseases', 'height', 'weight', 'eps', 'blood_type', 'emergency_contact',
       'father_name', 'father_phone', 'father_occupation',
       'mother_name', 'mother_phone', 'mother_occupation',
       'education_level', 'institution', 'career_grade', 'semester', 'photo_url'
     ];
+
 
 
     // Actualizar campos
@@ -197,15 +199,24 @@ const updateProfile = async (req, res) => {
         team_category: user.team_category,
         profile_completed: user.profile_completed,
         document_type: user.document_type,
-
         document_number: user.document_number,
+        document_issue_date: user.document_issue_date,
+        document_issue_place: user.document_issue_place,
         birth_date: user.birth_date,
+        birth_department: user.birth_department,
+        birth_municipality: user.birth_municipality,
+        nationality: user.nationality,
+        gender: user.gender,
         address: user.address,
         phone: user.phone,
         photo_url: user.photo_url,
         medical_history: user.medical_history,
         allergies: user.allergies,
         diseases: user.diseases,
+        height: user.height,
+        weight: user.weight,
+        eps: user.eps,
+        blood_type: user.blood_type,
         emergency_contact: user.emergency_contact,
         father_name: user.father_name,
         mother_name: user.mother_name,
@@ -215,6 +226,7 @@ const updateProfile = async (req, res) => {
         semester: user.semester
       }
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al actualizar perfil' });
@@ -307,13 +319,14 @@ const updateUser = async (req, res) => {
 
     // Campos que el admin puede actualizar
     const allowedFields = [
-      'name', 'team_category', 'document_type', 'document_number', 
-      'birth_date', 'address', 'phone', 'debt_status',
-      'medical_history', 'allergies', 'diseases', 'emergency_contact',
+      'name', 'team_category', 'document_type', 'document_number', 'document_issue_date', 'document_issue_place',
+      'birth_date', 'birth_department', 'birth_municipality', 'nationality', 'gender', 'address', 'phone', 'debt_status',
+      'medical_history', 'allergies', 'diseases', 'height', 'weight', 'eps', 'blood_type', 'emergency_contact',
       'father_name', 'father_phone', 'father_occupation',
       'mother_name', 'mother_phone', 'mother_occupation',
       'education_level', 'institution', 'career_grade', 'semester'
     ];
+
 
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {

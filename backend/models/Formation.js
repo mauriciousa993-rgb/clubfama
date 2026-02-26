@@ -48,9 +48,10 @@ const formationSchema = new mongoose.Schema({
   },
   team_category: {
     type: String,
-    enum: ['femenino', 'mini', 'juvenil', 'elite', 'all'],
+    enum: ['infantil', 'mini', 'juvenil', 'elite', 'all'],
     default: 'all'
   },
+
   total_steps: { 
     type: Number, 
     default: 1 

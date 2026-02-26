@@ -319,7 +319,8 @@ function editPlayer(id) {
     document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar Jugador';
     document.getElementById('playerName').value = player.name || '';
     document.getElementById('playerBirthDate').value = player.birthDate ? player.birthDate.split('T')[0] : '';
-    document.getElementById('playerCategory').value = player.category || 'femenino';
+    document.getElementById('playerCategory').value = player.category || 'infantil';
+
 
     document.getElementById('playerPosition').value = player.position || 'base';
     document.getElementById('playerPhone').value = player.phone || '';

@@ -1,117 +1,52 @@
-# Mejoras Móviles - Club Fama Valle
+# TODO: Agregar campos al perfil del jugador y cambiar categoría femenino por infantil
 
-## Pasos a Completar
+## Campos nuevos a agregar:
+- [x] Fecha de expedición del documento (document_issue_date)
+- [x] Lugar de expedición (document_issue_place)
+- [x] Nacionalidad (nationality)
+- [x] Departamento de nacimiento (birth_department)
+- [x] Municipio de nacimiento (birth_municipality)
+- [x] Género (gender): masculino, femenino, otro
+- [x] Estatura (height)
+- [x] Peso (weight)
+- [x] EPS (eps)
+- [x] Tipo de sangre (blood_type)
 
-### 1. HTML Principal ✅
-- [x] Agregar viewport meta tag en `frontend/public/index.html` (ya estaba presente)
+## Cambiar "femenino" por "infantil" en toda la app:
 
-### 2. CSS Base (style.css) ✅
-- [x] Agregar media queries para móviles (768px, 480px)
-- [x] Optimizar tamaños de fuente para móviles
-- [x] Mejorar botones para touch (mínimo 44px)
-- [x] Ajustar modales para pantallas pequeñas
-- [x] Optimizar espaciado de formularios
-- [x] Agregar optimizaciones para dispositivos táctiles
+### Backend:
+- [x] backend/models/User.js - Enum y nuevos campos
+- [x] backend/models/Formation.js - Enum
+- [x] backend/models/Event.js - Enum
+- [x] backend/controllers/authController.js - allowedFields
 
-### 3. Dashboard (dashboard.css) ✅
-- [x] Implementar menú hamburguesa para móviles
-- [x] Agregar botón de menú móvil
-- [x] Optimizar grid de estadísticas
-- [x] Mejorar header y navegación
-- [x] Agregar overlay para sidebar móvil
-- [x] Optimizar tarjetas de estadísticas
+### Frontend:
+- [x] frontend/public/pages/player-profile.html - Formulario y categoría
+- [x] frontend/public/pages/players.html - Categoría
+- [x] frontend/public/js/players.js - Categoría default y visualización de nuevos campos
+- [x] frontend/public/pages/reports.html - Categoría
+- [x] frontend/public/js/reports.js - Array y nombres
+- [x] frontend/public/pages/formations.html - Categoría
 
-### 4. Jugadores (players.css) ✅
-- [x] Ajustar grid de tarjetas para móviles (layout horizontal)
-- [x] Optimizar modal de perfil de jugador
-- [x] Mejorar filtros móviles
-- [x] Optimizar vista de perfil en móvil
-- [x] Mejorar targets táctiles
+## Progreso:
+✅ COMPLETADO - Todos los cambios implementados exitosamente
 
-### 5. Pagos (payments.css) ✅
-- [x] Mejorar tabla de pagos para móviles
-- [x] Optimizar scroll horizontal (-webkit-overflow-scrolling: touch)
-- [x] Ajustar cards de resumen
-- [x] Mejorar filtros móviles
-- [x] Optimizar botones de acción
+### Resumen de cambios realizados:
 
-### 6. Calendario (calendar.css) ✅
-- [x] Optimizar grid del calendario
-- [x] Mejorar sidebar de eventos
-- [x] Ajustar navegación del calendario
-- [x] Optimizar días del calendario en móvil
-- [x] Mejorar targets táctiles para botones
+**Backend (Modelos):**
+- User.js: Agregados 10 nuevos campos al esquema y cambiado enum de 'femenino' a 'infantil'
+- Formation.js: Actualizado enum team_category
+- Event.js: Actualizado enum team_category
 
-### 7. Reportes (reports.css) ✅
-- [x] Mejorar grids de resumen
-- [x] Optimizar tablas para móviles
-- [x] Ajustar filtros y formularios
-- [x] Optimizar modales de detalle
-- [x] Mejorar badges y botones de acción
+**Backend (Controladores):**
+- authController.js: Actualizados allowedFields en updateProfile y updateUser, y objetos de respuesta
 
-## Progreso
-- [ ] 0% - Pendiente
-- [ ] 25% - En progreso
-- [ ] 50% - A mitad de camino
-- [ ] 75% - Casi completo
-- [x] 100% - Completado ✅
+**Frontend (Perfil del Jugador):**
+- player-profile.html: Nuevos campos de documento (fecha/lugar expedición), información de nacimiento (nacionalidad, departamento, municipio), género, estatura, peso, EPS, tipo de sangre. Categoría cambiada a "infantil"
 
-## Nuevas Funcionalidades
-
-### 8. Sistemas de Juego (Baloncesto) ✅
-- [x] Crear modelo de datos `Formation.js` con pasos y movimientos
-- [x] Implementar controlador `formationController.js` (CRUD)
-- [x] Crear rutas API `formationRoutes.js`
-- [x] Integrar rutas en `server.js`
-- [x] Crear página admin `formations.html` con editor visual
-- [x] Crear página jugador `player-formations.html` con visualizador
-- [x] Implementar CSS `formations.css` con cancha interactiva
-- [x] Crear JavaScript admin `formations.js` (drag & drop, animación)
-- [x] Crear JavaScript jugador `player-formations.js` (visualización)
-- [x] Agregar menú en `dashboard.html` (admin)
-- [x] Agregar menú en `player-dashboard.html` (jugador)
-
-### Características implementadas:
-- **Editor visual**: Cancha de baloncesto con 5 jugadores posicionables
-- **Drag & drop**: Arrastrar jugadores para definir posiciones
-- **Múltiples pasos**: Crear secuencias de jugadas paso a paso
-- **Animación**: Reproducción fluida de movimientos entre pasos
-- **Control de velocidad**: 0.5x, 1x, 1.5x, 2x
-- **Balón interactivo**: Indicador visual de quién tiene el balón
-- **Filtros**: Por tipo (ataque, defensa, transición) y categoría
-- **Responsive**: Adaptado para móviles y tablets
-
-
-## Resumen de Mejoras Implementadas
-
-### 🎯 Optimizaciones Clave:
-
-1. **Navegación Móvil**: Sidebar transformado en menú deslizable con botón hamburguesa
-2. **Touch Targets**: Todos los botones y elementos interactivos ahora tienen mínimo 44px
-3. **Tipografía**: Ajustada para mejor legibilidad en pantallas pequeñas
-4. **Layouts**: Grids adaptativos que cambian a columnas únicas en móviles
-5. **Tablas**: Scroll horizontal optimizado con momentum scrolling en iOS
-6. **Modales**: Ajustados para ocupar casi toda la pantalla en móviles
-7. **Formularios**: Inputs con font-size 16px para prevenir zoom en iOS
-8. **Cards**: Reorganizadas para mejor uso del espacio horizontal
-
-### 📱 Breakpoints Implementados:
-- `480px`: Móviles pequeños
-- `576px`: Móviles medianos
-- `768px`: Tablets y móviles grandes
-- `992px`: Tablets grandes
-- `1024px`: Tablets landscape
-- `1200px`: Desktop pequeño
-
-### 🎨 Mejoras UX:
-- Hover effects desactivados en dispositivos táctiles
-- Bordes más gruesos en focus para mejor visibilidad
-- Espaciado optimizado para dedos
-- Scroll suave en tablas
-- Layouts de tarjetas horizontales para mejor escaneo
-
-## Próximos Pasos Sugeridos
-1. **Testing**: Probar en dispositivos reales (iOS Safari, Android Chrome)
-2. **JavaScript**: Agregar funcionalidad del menú hamburguesa en dashboard.js
-3. **PWA**: Considerar agregar manifest.json para experiencia app-like
-4. **Optimización**: Lazy loading de imágenes en tarjetas de jugadores
+**Frontend (Administración):**
+- players.html: Dropdowns de categoría actualizados
+- players.js: Categoría default cambiada y vista de perfil actualizada con nuevos campos
+- reports.html: Filtro de categoría actualizado
+- reports.js: Array de categorías y nombres actualizados
+- formations.html: Dropdowns de categoría actualizados

@@ -23,9 +23,10 @@ const userSchema = new mongoose.Schema({
   },
   team_category: {
     type: String,
-    enum: ['femenino', 'mini', 'juvenil', 'elite'],
+    enum: ['infantil', 'mini', 'juvenil', 'elite'],
     default: null
   },
+
 
   debt_status: {
     type: Boolean,
@@ -41,10 +42,36 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  document_issue_date: {
+    type: Date,
+    default: null
+  },
+  document_issue_place: {
+    type: String,
+    default: null
+  },
   birth_date: {
     type: Date,
     default: null
   },
+  birth_department: {
+    type: String,
+    default: null
+  },
+  birth_municipality: {
+    type: String,
+    default: null
+  },
+  nationality: {
+    type: String,
+    default: null
+  },
+  gender: {
+    type: String,
+    enum: ['masculino', 'femenino', 'otro'],
+    default: null
+  },
+
   address: {
     type: String,
     default: null
@@ -70,6 +97,24 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  height: {
+    type: String,
+    default: null
+  },
+  weight: {
+    type: String,
+    default: null
+  },
+  eps: {
+    type: String,
+    default: null
+  },
+  blood_type: {
+    type: String,
+    enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+    default: null
+  },
+
   emergency_contact: {
     name: { type: String, default: null },
     phone: { type: String, default: null },

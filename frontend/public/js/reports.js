@@ -53,13 +53,14 @@ function updateSummaryCards() {
 
 // Renderizar estadísticas por categoría
 function renderCategoryStats() {
-    const categories = ['femenino', 'mini', 'juvenil', 'elite'];
+    const categories = ['infantil', 'mini', 'juvenil', 'elite'];
     const categoryNames = {
-        'femenino': 'Femenino',
+        'infantil': 'Infantil',
         'mini': 'Mini',
         'juvenil': 'Juvenil',
         'elite': 'Elite'
     };
+
 
     
     const stats = categories.map(cat => {
