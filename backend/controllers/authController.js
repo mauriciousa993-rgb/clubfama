@@ -362,6 +362,22 @@ const updateUser = async (req, res) => {
   }
 };
 
+// @desc    Obtener cumpleaños de todos los jugadores
+// @route   GET /api/auth/birthdays
+// @access  Private (todos los usuarios autenticados)
+const getBirthdays = async (req, res) => {
+  try {
+    // Obtener todos los jugadores con su información de cumpleaños
+    const users = await User.find({ role: 'player' })
+      .select('name birth_date photo_url team_category phone')
+      .sort({ name: 1 });
+    
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener cumpleaños' });
+  }
+};
 
 module.exports = {
   register,
@@ -372,4 +388,5 @@ module.exports = {
   uploadPhoto,
   deleteUser,
   updateUser,
+  getBirthdays,
 };

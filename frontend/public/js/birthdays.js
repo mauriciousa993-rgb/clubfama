@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initMobileMenu();
     loadUserRole();
-    loadBirthdays();
     setupNavigationMenu();
+    loadBirthdays();
     
     // Fecha actual
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', {
@@ -110,10 +110,11 @@ function setupNavigationMenu() {
     }
 }
 
-// Cargar cumpleaños
+// Cargar cumpleaños - funciona para ambos roles (usa endpoint /auth/birthdays)
 async function loadBirthdays() {
     try {
-        const response = await fetch(`${API_URL}/auth/users`, {
+        // Usar el nuevo endpoint de cumpleaños disponible para todos los usuarios autenticados
+        const response = await fetch(`${API_URL}/auth/birthdays`, {
             headers: getAuthHeaders()
         });
         
@@ -121,13 +122,15 @@ async function loadBirthdays() {
             allPlayers = await response.json();
             processBirthdays();
         } else {
-            showError('Error al cargar los jugadores');
+            showError('Error al cargar los cumpleaños');
         }
+        
     } catch (error) {
         console.error('Error loading birthdays:', error);
         showError('Error de conexión');
     }
 }
+
 
 // Procesar y mostrar cumpleaños
 function processBirthdays() {
@@ -137,6 +140,22 @@ function processBirthdays() {
     
     // Filtrar jugadores con fecha de nacimiento
     const playersWithBirthday = allPlayers.filter(p => p.birth_date);
+    
+    // Si no hay jugadores con cumpleaños, mostrar mensaje
+    if (playersWithBirthday.length === 0) {
+        document.getElementById('todayCount').textContent = '0';
+        document.getElementById('thisWeekCount').textContent = '0';
+        document.getElementById('thisMonthCount').textContent = '0';
+        document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('upcomingBirthdays').innerHTML = `
+            <div class="empty-birthdays">
+                <i class="fas fa-calendar-check"></i>
+                <p>No hay información de cumpleaños disponible</p>
+            </div>
+        `;
+        document.getElementById('monthBirthdaysBody').innerHTML = '<tr><td colspan="6" class="text-center">No hay cumpleaños registrados</td></tr>';
+        return;
+    }
     
     // Calcular datos para cada jugador
     const birthdayData = playersWithBirthday.map(player => {
@@ -305,12 +324,14 @@ function renderMonthBirthdays(players) {
 // Mostrar error
 function showError(message) {
     const container = document.getElementById('upcomingBirthdays');
-    container.innerHTML = `
-        <div class="empty-birthdays">
-            <i class="fas fa-exclamation-circle"></i>
-            <p>${message}</p>
-        </div>
-    `;
+    if (container) {
+        container.innerHTML = `
+            <div class="empty-birthdays">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>${message}</p>
+            </div>
+        `;
+    }
 }
 
 // Helper para headers de autenticación

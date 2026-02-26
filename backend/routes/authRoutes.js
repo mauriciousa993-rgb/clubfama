@@ -10,8 +10,10 @@ const {
   getUsers,
   uploadPhoto,
   deleteUser,
-  updateUser
+  updateUser,
+  getBirthdays
 } = require('../controllers/authController');
+
 
 
 // Rutas públicas
@@ -30,5 +32,7 @@ router.put('/users/:id', protect, adminOnly, updateUser);
 // Ruta para subir foto de perfil
 router.post('/upload-photo', protect, upload.single('photo'), uploadPhoto);
 
+// Ruta para obtener cumpleaños (accesible para todos los usuarios autenticados)
+router.get('/birthdays', protect, getBirthdays);
 
 module.exports = router;
