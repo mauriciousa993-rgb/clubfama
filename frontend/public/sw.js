@@ -217,3 +217,90 @@ async function syncPendingPayments() {
   // Implementar lógica de sincronización si es necesario
   console.log('[SW] Sincronizando pagos pendientes...');
 }
+
+// ==================== NOTIFICACIONES PUSH ====================
+
+// Escuchar eventos push del servidor
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push recibido:', event);
+
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = {
+      title: 'FAMA VALLE',
+      body: event.data.text() || 'Nueva notificación',
+      icon: '/images/logo.jpg',
+      badge: '/images/logo.jpg',
+      tag: 'general',
+      data: { url: '/' }
+    };
+  }
+
+  const options = {
+    body: data.body || 'Nueva notificación de FAMA VALLE',
+    icon: data.icon || '/images/logo.jpg',
+    badge: data.badge || '/images/logo.jpg',
+    tag: data.tag || 'general',
+    requireInteraction: data.requireInteraction || false,
+    actions: data.actions || [],
+    data: data.data || { url: '/' }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(
+      data.title || 'FAMA VALLE',
+      options
+    )
+  );
+});
+
+// Manejar clic en notificaciones
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notificación clickeada:', event);
+
+  event.notification.close();
+
+  const url = event.notification.data?.url || '/';
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Si ya hay una ventana abierta, enfocarla
+        for (const client of clientList) {
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // Si no hay ventana abierta, abrir una nueva
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
+  );
+});
+
+// Manejar acciones de notificaciones (botones)
+self.addEventListener('notificationclick', (event) => {
+  if (!event.action) return; // No es una acción, es clic normal
+
+  event.notification.close();
+
+  const url = event.notification.data?.url || '/';
+
+  switch (event.action) {
+    case 'pay':
+      event.waitUntil(
+        clients.openWindow('/pages/payments.html')
+      );
+      break;
+    case 'dismiss':
+      // Solo cerrar, no hacer nada más
+      break;
+    default:
+      event.waitUntil(
+        clients.openWindow(url)
+      );
+  }
+});
