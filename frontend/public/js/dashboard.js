@@ -187,75 +187,82 @@ async function loadRecentPayments() {
 // Cargar próximos eventos desde localStorage
 async function loadUpcomingEvents() {
     const eventsList = document.getElementById('eventsList');
-    if (!eventsList) return;
-    
-    // Cargar eventos desde localStorage
-    const savedEvents = localStorage.getItem('clubEvents');
-    let events = [];
-    
-    if (savedEvents) {
-        events = JSON.parse(savedEvents);
-    }
-    
-    // Filtrar eventos futuros (desde hoy en adelante)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Helper para parsear fecha local desde YYYY-MM-DD
-    const parseLocalDate = (dateStr) => {
-        const [year, month, day] = dateStr.split('-').map(Number);
-        return new Date(year, month - 1, day);
-    };
-    
-    const upcomingEvents = events
-        .filter(event => {
-            const eventDate = parseLocalDate(event.date);
-            return eventDate >= today;
-        })
-        .sort((a, b) => parseLocalDate(a.date) - parseLocalDate(b.date))
-        .slice(0, 5); // Mostrar máximo 5 eventos próximos
-
-    
-    if (upcomingEvents.length === 0) {
-        eventsList.innerHTML = '<p class="no-events">No hay eventos próximos</p>';
-        // Actualizar contador a 0
-        const upcomingEventsCount = document.getElementById('upcomingEvents');
-        if (upcomingEventsCount) {
-            upcomingEventsCount.textContent = '0';
-        }
+    if (!eventsList) {
+        console.log('[Dashboard] No se encontró eventsList');
         return;
     }
     
-    // Actualizar contador
-    const upcomingEventsCount = document.getElementById('upcomingEvents');
-    if (upcomingEventsCount) {
-        upcomingEventsCount.textContent = upcomingEvents.length.toString();
-    }
-    
-    eventsList.innerHTML = upcomingEvents.map(event => {
-        // Parsear fecha local desde YYYY-MM-DD
-        const [year, month, day] = event.date.split('-').map(Number);
-        const eventDate = new Date(year, month - 1, day);
-        const dayStr = day.toString().padStart(2, '0');
-        const monthStr = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+    try {
+        // Cargar eventos desde localStorage
+        const savedEvents = localStorage.getItem('clubEvents');
+        let events = [];
         
-        return `
-
-            <div class="event-item">
-                <div class="event-date">
-                    <div class="day">${dayStr}</div>
-                    <div class="month">${monthStr}</div>
+        if (savedEvents) {
+            events = JSON.parse(savedEvents);
+            console.log('[Dashboard] Eventos cargados:', events.length);
+        } else {
+            console.log('[Dashboard] No hay eventos en localStorage');
+        }
+        
+        // Filtrar eventos futuros (desde hoy en adelante)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Helper para parsear fecha local desde YYYY-MM-DD
+        const parseLocalDate = (dateStr) => {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        };
+        
+        const upcomingEvents = events
+            .filter(event => {
+                const eventDate = parseLocalDate(event.date);
+                return eventDate >= today;
+            })
+            .sort((a, b) => parseLocalDate(a.date) - parseLocalDate(b.date))
+            .slice(0, 5); // Mostrar máximo 5 eventos próximos
+        
+        // Actualizar contador
+        const upcomingEventsCount = document.getElementById('upcomingEvents');
+        if (upcomingEventsCount) {
+            upcomingEventsCount.textContent = upcomingEvents.length.toString();
+        }
+        
+        if (upcomingEvents.length === 0) {
+            eventsList.innerHTML = '<p class="no-events">No hay eventos próximos</p>';
+            return;
+        }
+        
+        eventsList.innerHTML = upcomingEvents.map(event => {
+            // Parsear fecha local desde YYYY-MM-DD
+            const [year, month, day] = event.date.split('-').map(Number);
+            const eventDate = new Date(year, month - 1, day);
+            const dayStr = day.toString().padStart(2, '0');
+            const monthStr = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+            
+            return `
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="day">${dayStr}</div>
+                        <div class="month">${monthStr}</div>
+                    </div>
+                    <div class="event-info">
+                        <h4>${event.title}</h4>
+                        <p><i class="fas fa-clock"></i> ${event.time || '--:--'}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
+                    </div>
                 </div>
-
-                <div class="event-info">
-                    <h4>${event.title}</h4>
-                    <p><i class="fas fa-clock"></i> ${event.time || '--:--'}</p>
-                    <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
-                </div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+        
+        console.log('[Dashboard] Eventos renderizados:', upcomingEvents.length);
+        
+    } catch (error) {
+        console.error('[Dashboard] Error cargando eventos:', error);
+        eventsList.innerHTML = '<p class="no-events">Error al cargar eventos</p>';
+    }
 }
+
 
 
 // Cargar pagos pendientes de verificación (Admin)

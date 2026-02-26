@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="description" content="Sistema de Gestión Deportiva - Club FAMA VALLE">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FAMA VALLE">
     <title>Dashboard - Club FAMA VALLE</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="apple-touch-icon" href="../images/logo.jpg">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Mobile Menu Button -->
@@ -190,6 +198,19 @@
     <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/dashboard.js"></script>
-
+    
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../sw.js')
+                .then((registration) => {
+                    console.log('SW registrado:', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('SW registro falló:', error);
+                });
+        }
+    </script>
 </body>
+
 </html>
