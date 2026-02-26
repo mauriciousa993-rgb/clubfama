@@ -28,8 +28,25 @@
 - [x] frontend/public/js/reports.js - Array y nombres
 - [x] frontend/public/pages/formations.html - Categoría
 
+## Nueva Página de Cumpleaños:
+- [x] frontend/public/pages/birthdays.html - Página HTML creada
+- [x] frontend/public/css/birthdays.css - Estilos creados
+- [x] frontend/public/js/birthdays.js - Funcionalidad JavaScript
+- [x] frontend/public/pages/dashboard.html - Enlace agregado al menú
+- [x] frontend/public/pages/players.html - Enlace agregado al menú
+- [x] frontend/public/pages/payments.html - Enlace agregado al menú
+- [x] frontend/public/pages/calendar.html - Enlace agregado al menú
+- [x] frontend/public/pages/formations.html - Enlace agregado al menú
+- [x] frontend/public/pages/reports.html - Enlace agregado al menú
+- [x] frontend/public/pages/player-dashboard.html - Enlace agregado al menú
+- [x] frontend/public/pages/player-profile.html - Enlace agregado al menú
+- [x] frontend/public/pages/player-calendar.html - Enlace agregado al menú
+- [x] frontend/public/pages/player-formations.html - Enlace agregado al menú
+
 ## Progreso:
 ✅ COMPLETADO - Todos los cambios implementados exitosamente
+
+
 
 ### Resumen de cambios realizados:
 

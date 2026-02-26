@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cumpleaños - Club FAMA VALLE</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/birthdays.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Mobile Overlay -->
+        <div id="mobileOverlay" class="mobile-overlay"></div>
+        
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.jpg" alt="Club FAMA VALLE" class="sidebar-logo">
+                <span>CLUB FAMA VALLE</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <!-- El menú se cargará dinámicamente según el rol -->
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Usuario</span>
+                </div>
+                <button onclick="logout()" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1><i class="fas fa-birthday-cake"></i> Cumpleaños del Club</h1>
+                <div class="date" id="currentDate"></div>
+            </header>
+
+            <!-- Resumen de Cumpleaños -->
+            <div class="birthday-summary">
+                <div class="summary-card today">
+                    <div class="summary-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="todayCount">0</h3>
+                        <p>Hoy</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card this-week">
+                    <div class="summary-icon">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="thisWeekCount">0</h3>
+                        <p>Esta Semana</p>
+                    </div>
+                </div>
+                
+                <div class="summary-card this-month">
+                    <div class="summary-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="summary-info">
+                        <h3 id="thisMonthCount">0</h3>
+                        <p>Este Mes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cumpleaños de Hoy -->
+            <div class="dashboard-section" id="todaySection">
+                <h2><i class="fas fa-gift"></i> ¡Feliz Cumpleaños Hoy! 🎉</h2>
+                <div class="birthdays-grid" id="todayBirthdays">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Próximos Cumpleaños -->
+            <div class="dashboard-section">
+                <h2><i class="fas fa-calendar-day"></i> Próximos Cumpleaños</h2>
+                <div class="birthdays-list" id="upcomingBirthdays">
+                    <!-- Se llena con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Todos los Cumpleaños del Mes -->
+            <div class="dashboard-section">
+                <h2><i class="fas fa-calendar-alt"></i> Cumpleaños del Mes</h2>
+                <div class="table-container">
+                    <table id="monthBirthdaysTable">
+                        <thead>
+                            <tr>
+                                <th>Jugador</th>
+                                <th>Fecha</th>
+                                <th>Día</th>
+                                <th>Edad</th>
+                                <th>Categoría</th>
+                                <th>Contacto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthBirthdaysBody">
+                            <!-- Se llena con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/birthdays.js"></script>
+</body>
+</html>
