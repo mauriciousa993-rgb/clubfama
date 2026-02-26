@@ -2,29 +2,13 @@
 let currentDate = new Date();
 let events = [];
 
-// Guardar eventos en localStorage
-function saveEvents() {
-    localStorage.setItem('clubEvents', JSON.stringify(events));
-}
-
-// Cargar eventos desde localStorage
-function loadEventsFromStorage() {
-    const savedEvents = localStorage.getItem('clubEvents');
-    if (savedEvents) {
-        events = JSON.parse(savedEvents);
-        return true;
-    }
-    return false;
-}
-
-
 document.addEventListener('DOMContentLoaded', async function() {
     if (!checkAuth()) return;
     
     // Initialize mobile menu
     initMobileMenu();
     
-    // Cargar eventos primero, luego renderizar
+    // Cargar eventos desde API, luego renderizar
     await loadEvents();
     renderCalendar();
     
@@ -35,7 +19,44 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-
+// Cargar eventos desde API (sincronizados entre dispositivos)
+async function loadEvents() {
+    try {
+        console.log('[Calendar] Cargando eventos desde API...');
+        
+        const response = await fetch(`${API_URL}/events`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (response.ok) {
+            events = await response.json();
+            console.log('[Calendar] Eventos cargados desde API:', events.length);
+            
+            // Guardar copia local para offline
+            localStorage.setItem('clubEvents', JSON.stringify(events));
+        } else {
+            console.error('[Calendar] Error al cargar desde API:', response.status);
+            // Fallback: cargar desde localStorage
+            const savedEvents = localStorage.getItem('clubEvents');
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+                console.log('[Calendar] Fallback - Eventos desde localStorage:', events.length);
+            } else {
+                events = [];
+            }
+        }
+        
+        renderEventsList();
+    } catch (error) {
+        console.error('[Calendar] Error loading events:', error);
+        // Fallback: cargar desde localStorage
+        const savedEvents = localStorage.getItem('clubEvents');
+        if (savedEvents) {
+            events = JSON.parse(savedEvents);
+            renderEventsList();
+        }
+    }
+}
 
 // Renderizar calendario
 function renderCalendar() {
@@ -84,7 +105,7 @@ function renderCalendar() {
             
             dayEvents.slice(0, 3).forEach(event => {
                 const dot = document.createElement('div');
-                dot.className = `event-dot ${event.type}`;
+                dot.className = `event-dot ${event.event_type || 'otro'}`;
                 dot.title = event.title;
                 eventsContainer.appendChild(dot);
             });
@@ -140,7 +161,6 @@ function getEventsForDay(year, month, day) {
     });
 }
 
-
 // Mes anterior
 function previousMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
@@ -154,27 +174,6 @@ function nextMonth() {
     renderCalendar();
     renderEventsList();
 }
-
-
-// Cargar eventos
-async function loadEvents() {
-    try {
-        // Intentar cargar desde localStorage primero
-        const hasSavedEvents = loadEventsFromStorage();
-        
-        // Si no hay eventos guardados, iniciar con array vacío (sin eventos de ejemplo)
-        if (!hasSavedEvents) {
-            events = [];
-            saveEvents();
-        }
-        
-        renderEventsList();
-    } catch (error) {
-        console.error('Error loading events:', error);
-    }
-}
-
-
 
 // Renderizar lista de eventos
 function renderEventsList() {
@@ -209,9 +208,8 @@ function renderEventsList() {
         const day = eventDay;
         const month = new Date(eventYear, eventMonth - 1).toLocaleDateString('es-ES', { month: 'short' });
 
-        
         return `
-            <div class="event-card ${event.type}" data-event-id="${event._id}">
+            <div class="event-card ${event.event_type || 'otro'}" data-event-id="${event._id}">
                 <div class="event-time">
                     <div class="time">${event.time || '--:--'}</div>
                     <div class="ampm">${day} ${month}</div>
@@ -219,7 +217,7 @@ function renderEventsList() {
                 <div class="event-details">
                     <h4>${event.title}</h4>
                     <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
-                    <p><i class="fas fa-users"></i> ${capitalize(event.category || 'Todas')}</p>
+                    <p><i class="fas fa-users"></i> ${capitalize(event.team_category || 'Todas')}</p>
                 </div>
                 <div class="event-actions">
                     <button class="btn-action btn-edit" onclick="editEvent('${event._id}')" title="Editar">
@@ -248,12 +246,12 @@ function editEvent(eventId) {
     document.getElementById('eventTitle').value = event.title;
     document.getElementById('eventDate').value = event.date;
     document.getElementById('eventTime').value = event.time || '';
-    document.getElementById('eventType').value = event.type;
-    document.getElementById('eventCategory').value = event.category || 'all';
+    document.getElementById('eventType').value = event.event_type || 'entrenamiento';
+    document.getElementById('eventCategory').value = event.team_category || 'all';
     document.getElementById('eventLocation').value = event.location || '';
     document.getElementById('eventDescription').value = event.description || '';
     document.getElementById('eventRecurrence').value = event.recurrence || 'none';
-    document.getElementById('eventRecurrenceEnd').value = event.recurrenceEnd || '';
+    document.getElementById('eventRecurrenceEnd').value = event.recurrence_end_date || '';
     
     // Cambiar el título del modal
     document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Evento';
@@ -263,7 +261,7 @@ function editEvent(eventId) {
 }
 
 // Eliminar evento
-function deleteEvent(eventId) {
+async function deleteEvent(eventId) {
     const event = events.find(e => e._id === eventId);
     if (!event) return;
     
@@ -271,19 +269,31 @@ function deleteEvent(eventId) {
         return;
     }
     
-    // Eliminar el evento del array
-    events = events.filter(e => e._id !== eventId);
-    
-    // Guardar en localStorage
-    saveEvents();
-    
-    // Actualizar la vista
-    renderCalendar();
-    renderEventsList();
-    
-    showToast('Evento eliminado correctamente', 'success');
+    try {
+        // Intentar eliminar en la API
+        const response = await fetch(`${API_URL}/events/${eventId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        
+        if (response.ok) {
+            // Eliminar del array local
+            events = events.filter(e => e._id !== eventId);
+            // Actualizar localStorage
+            localStorage.setItem('clubEvents', JSON.stringify(events));
+            
+            showToast('Evento eliminado correctamente', 'success');
+            renderCalendar();
+            renderEventsList();
+        } else {
+            const error = await response.json();
+            showToast(error.message || 'Error al eliminar evento', 'error');
+        }
+    } catch (error) {
+        console.error('[Calendar] Error deleting event:', error);
+        showToast('Error de conexión al eliminar evento', 'error');
+    }
 }
-
 
 // Mostrar modal de evento
 function showAddEventModal() {
@@ -292,7 +302,6 @@ function showAddEventModal() {
     document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-calendar-plus"></i> Nuevo Evento';
     document.getElementById('eventModal').classList.add('active');
 }
-
 
 // Mostrar modal para día específico
 function showAddEventModalForDay(year, month, day) {
@@ -306,50 +315,6 @@ function closeEventModal() {
     document.getElementById('eventModal').classList.remove('active');
 }
 
-// Generar fechas recurrentes
-function generateRecurringDates(startDate, recurrence, endDate) {
-    const dates = [];
-    
-    // Parsear fecha inicial como local (YYYY-MM-DD)
-    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
-    const start = new Date(startYear, startMonth - 1, startDay);
-    
-    // Fecha final (default: 1 año desde inicio)
-    let end;
-    if (endDate) {
-        const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
-        end = new Date(endYear, endMonth - 1, endDay);
-    } else {
-        end = new Date(startYear + 1, startMonth - 1, startDay);
-    }
-    
-    let current = new Date(start);
-    
-    while (current <= end) {
-        // Guardar fecha en formato YYYY-MM-DD usando componentes locales
-        const year = current.getFullYear();
-        const month = String(current.getMonth() + 1).padStart(2, '0');
-        const day = String(current.getDate()).padStart(2, '0');
-        dates.push(`${year}-${month}-${day}`);
-        
-        switch (recurrence) {
-            case 'daily':
-                current.setDate(current.getDate() + 1);
-                break;
-            case 'weekly':
-                current.setDate(current.getDate() + 7);
-                break;
-            case 'monthly':
-                current.setMonth(current.getMonth() + 1);
-                break;
-            default:
-                return dates;
-        }
-    }
-    
-    return dates;
-}
-
 // Manejar submit del formulario
 async function handleEventSubmit(e) {
     e.preventDefault();
@@ -358,83 +323,102 @@ async function handleEventSubmit(e) {
         title: document.getElementById('eventTitle').value,
         date: document.getElementById('eventDate').value,
         time: document.getElementById('eventTime').value,
-        type: document.getElementById('eventType').value,
-        category: document.getElementById('eventCategory').value,
+        event_type: document.getElementById('eventType').value,
+        team_category: document.getElementById('eventCategory').value,
         location: document.getElementById('eventLocation').value,
         description: document.getElementById('eventDescription').value,
         recurrence: document.getElementById('eventRecurrence').value,
-        recurrenceEnd: document.getElementById('eventRecurrenceEnd').value
+        recurrence_end_date: document.getElementById('eventRecurrenceEnd').value || null
     };
     
     try {
-        // Si estamos editando, actualizar el evento existente
         if (editingEventId) {
-            const eventIndex = events.findIndex(e => e._id === editingEventId);
-            if (eventIndex !== -1) {
-                events[eventIndex] = {
-                    ...events[eventIndex],
-                    title: eventData.title,
-                    date: eventData.date,
-                    time: eventData.time,
-                    type: eventData.type,
-                    category: eventData.category,
-                    location: eventData.location,
-                    description: eventData.description,
-                    recurrence: eventData.recurrence,
-                    recurrenceEnd: eventData.recurrenceEnd
-                };
+            // Actualizar evento existente
+            const response = await fetch(`${API_URL}/events/${editingEventId}`, {
+                method: 'PUT',
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            });
+            
+            if (response.ok) {
+                const updatedEvent = await response.json();
                 
-                saveEvents();
+                // Actualizar en el array local
+                const index = events.findIndex(e => e._id === editingEventId);
+                if (index !== -1) {
+                    events[index] = updatedEvent.event;
+                }
+                
+                // Actualizar localStorage
+                localStorage.setItem('clubEvents', JSON.stringify(events));
+                
                 showToast('Evento actualizado correctamente', 'success');
                 closeEventModal();
                 renderCalendar();
                 renderEventsList();
                 editingEventId = null;
-                return;
+            } else {
+                const error = await response.json();
+                showToast(error.message || 'Error al actualizar evento', 'error');
+            }
+        } else {
+            // Crear nuevo evento
+            const response = await fetch(`${API_URL}/events`, {
+                method: 'POST',
+                headers: {
+                    ...getAuthHeaders(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                
+                // Recargar eventos desde API para obtener todos (incluyendo recurrentes)
+                await loadEvents();
+                
+                const message = result.event.recurrence !== 'none' 
+                    ? 'Eventos creados exitosamente' 
+                    : 'Evento creado exitosamente';
+                
+                showToast(message, 'success');
+                closeEventModal();
+                renderCalendar();
+                renderEventsList();
+            } else {
+                const error = await response.json();
+                showToast(error.message || 'Error al crear evento', 'error');
             }
         }
-        
-        // Generar eventos según recurrencia (solo para nuevos eventos)
-        const recurrence = eventData.recurrence;
-        const dates = recurrence !== 'none' 
-            ? generateRecurringDates(eventData.date, recurrence, eventData.recurrenceEnd)
-            : [eventData.date];
-        
-        // Crear eventos para cada fecha
-        dates.forEach(date => {
-            events.push({
-                _id: generateId(),
-                title: eventData.title,
-                date: date,
-                time: eventData.time,
-                type: eventData.type,
-                category: eventData.category,
-                location: eventData.location,
-                description: eventData.description,
-                recurrence: recurrence,
-                parentEvent: dates.length > 1 ? dates[0] : null
-            });
-        });
-        
-        const message = dates.length > 1 
-            ? `${dates.length} eventos creados exitosamente` 
-            : 'Evento creado exitosamente';
-        
-        // Guardar eventos en localStorage
-        saveEvents();
-        
-        showToast(message, 'success');
-        closeEventModal();
-        renderCalendar();
-        renderEventsList();
-        
     } catch (error) {
-        console.error('Error saving event:', error);
-        showToast('Error al guardar evento', 'error');
+        console.error('[Calendar] Error saving event:', error);
+        showToast('Error de conexión al guardar evento', 'error');
     }
 }
 
-// Generar ID único
-function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+// Helper para capitalizar
+function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Helper para mostrar toast (si no existe)
+if (typeof showToast !== 'function') {
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
 }

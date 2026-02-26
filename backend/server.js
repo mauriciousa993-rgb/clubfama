@@ -75,6 +75,8 @@ app.use('/templates', express.static(path.join(__dirname, '../templates')));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/formations', require('./routes/formationRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
+
 
 
 // Ruta de salud/health check

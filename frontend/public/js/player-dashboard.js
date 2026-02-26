@@ -11,8 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     loadUserInfo();
     loadMyPayments();
+    loadUpcomingEvents();
     setupUploadForm();
 });
+
 
 
 // Cargar información del usuario
@@ -206,6 +208,90 @@ function translateMonth(month) {
         'December': 'Diciembre'
     };
     return months[month] || month;
+}
+
+// Cargar próximos eventos desde API (sincronizados entre dispositivos)
+async function loadUpcomingEvents() {
+    const eventsList = document.getElementById('eventsList');
+    if (!eventsList) {
+        console.log('[PlayerDashboard] No se encontró eventsList');
+        return;
+    }
+    
+    try {
+        console.log('[PlayerDashboard] Cargando eventos desde API...');
+        
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/events/upcoming?limit=5`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        let events = [];
+        
+        if (response.ok) {
+            events = await response.json();
+            console.log('[PlayerDashboard] Eventos cargados desde API:', events.length);
+        } else {
+            console.error('[PlayerDashboard] Error al cargar eventos:', response.status);
+            // Fallback: intentar cargar desde localStorage
+            const savedEvents = localStorage.getItem('clubEvents');
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+                console.log('[PlayerDashboard] Fallback - Eventos desde localStorage:', events.length);
+            }
+        }
+        
+        // Filtrar eventos futuros
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const parseLocalDate = (dateStr) => {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        };
+        
+        const upcomingEvents = events
+            .filter(event => {
+                const eventDate = parseLocalDate(event.date);
+                return eventDate >= today;
+            })
+            .sort((a, b) => parseLocalDate(a.date) - parseLocalDate(b.date))
+            .slice(0, 5);
+        
+        if (upcomingEvents.length === 0) {
+            eventsList.innerHTML = '<p class="no-events">No hay eventos próximos</p>';
+            return;
+        }
+        
+        eventsList.innerHTML = upcomingEvents.map(event => {
+            const [year, month, day] = event.date.split('-').map(Number);
+            const eventDate = new Date(year, month - 1, day);
+            const dayStr = day.toString().padStart(2, '0');
+            const monthStr = eventDate.toLocaleDateString('es-ES', { month: 'short' });
+            
+            return `
+                <div class="event-item">
+                    <div class="event-date">
+                        <div class="day">${dayStr}</div>
+                        <div class="month">${monthStr}</div>
+                    </div>
+                    <div class="event-info">
+                        <h4>${event.title}</h4>
+                        <p><i class="fas fa-clock"></i> ${event.time || '--:--'}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${event.location || 'Sin ubicación'}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log('[PlayerDashboard] Eventos renderizados:', upcomingEvents.length);
+        
+    } catch (error) {
+        console.error('[PlayerDashboard] Error cargando eventos:', error);
+        eventsList.innerHTML = '<p class="no-events">Error al cargar eventos</p>';
+    }
 }
 
 function showMessage(message, type) {

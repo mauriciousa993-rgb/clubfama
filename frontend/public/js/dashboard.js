@@ -86,7 +86,7 @@ async function loadDashboardData() {
         // Cargar pagos recientes
         await loadRecentPayments();
         
-        // Cargar próximos eventos
+        // Cargar próximos eventos desde API (sincronizados entre dispositivos)
         await loadUpcomingEvents();
         
     } catch (error) {
@@ -184,7 +184,7 @@ async function loadRecentPayments() {
     }
 }
 
-// Cargar próximos eventos desde localStorage
+// Cargar próximos eventos desde API (sincronizados entre todos los dispositivos)
 async function loadUpcomingEvents() {
     const eventsList = document.getElementById('eventsList');
     if (!eventsList) {
@@ -193,15 +193,26 @@ async function loadUpcomingEvents() {
     }
     
     try {
-        // Cargar eventos desde localStorage
-        const savedEvents = localStorage.getItem('clubEvents');
+        console.log('[Dashboard] Cargando eventos desde API...');
+        
+        // Cargar eventos desde la API (sincronizados entre dispositivos)
+        const response = await fetch(`${API_URL}/events/upcoming?limit=5`, {
+            headers: getAuthHeaders()
+        });
+        
         let events = [];
         
-        if (savedEvents) {
-            events = JSON.parse(savedEvents);
-            console.log('[Dashboard] Eventos cargados:', events.length);
+        if (response.ok) {
+            events = await response.json();
+            console.log('[Dashboard] Eventos cargados desde API:', events.length);
         } else {
-            console.log('[Dashboard] No hay eventos en localStorage');
+            console.error('[Dashboard] Error al cargar eventos desde API:', response.status);
+            // Fallback: intentar cargar desde localStorage temporalmente
+            const savedEvents = localStorage.getItem('clubEvents');
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+                console.log('[Dashboard] Fallback - Eventos desde localStorage:', events.length);
+            }
         }
         
         // Filtrar eventos futuros (desde hoy en adelante)
