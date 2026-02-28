@@ -13,13 +13,24 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 50%, var(--primary-dark) 100%);
     color: white;
     z-index: 200;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(30, 58, 138, 0.4);
+}
+
+.mobile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    pointer-events: none;
 }
 
 .mobile-logo {
@@ -69,21 +80,21 @@
     left: 12px;
     width: 52px;
     height: 52px;
-    background: var(--secondary-color);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #d97706 100%);
     color: white;
     border: 3px solid white;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 1.4rem;
     cursor: pointer;
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.5), 0 2px 4px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
 }
 
 .mobile-menu-btn:hover {
-    background: #d97706;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
     transform: scale(1.05);
 }
 
@@ -115,7 +126,7 @@
 
 .sidebar {
     width: 260px;
-    background: var(--primary-color);
+    background: linear-gradient(180deg, var(--primary-color) 0%, #1e3a8a 50%, #172554 100%);
     color: white;
     display: flex;
     flex-direction: column;
@@ -126,6 +137,20 @@
     transition: transform 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* Sidebar pattern overlay */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 
@@ -321,11 +346,32 @@
     align-items: center;
     gap: 16px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid transparent;
 }
 
 .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+}
+
+.stat-card.primary {
+    border-left-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #eff6ff 100%);
+}
+
+.stat-card.success {
+    border-left-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #ecfdf5 100%);
+}
+
+.stat-card.warning {
+    border-left-color: var(--warning-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #fffbeb 100%);
+}
+
+.stat-card.danger {
+    border-left-color: var(--danger-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #fef2f2 100%);
 }
 
 .stat-card i {
@@ -627,6 +673,20 @@ tr:hover {
         padding: 80px 16px 24px;
         min-height: 100vh;
         min-height: 100dvh;
+        background: linear-gradient(180deg, #e0e7ff 0%, #f3f4f6 30%, #f3f4f6 100%);
+    }
+    
+    /* Fondo mejorado cuando el menú está cerrado */
+    .main-content::before {
+        content: '';
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: linear-gradient(180deg, rgba(30, 58, 138, 0.08) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: -1;
     }
     
     /* Header más compacto */
@@ -663,11 +723,18 @@ tr:hover {
     .card {
         padding: 16px;
         margin-bottom: 16px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,0,0,0.05);
     }
     
     .card h2 {
         font-size: 1rem;
         margin-bottom: 16px;
+        color: var(--primary-color);
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e0e7ff;
     }
     
     /* Tablas con scroll horizontal */

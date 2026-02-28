@@ -15,11 +15,27 @@
     align-items: center;
     gap: 16px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid transparent;
 }
 
 .summary-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+}
+
+.summary-card.income {
+    border-left-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #ecfdf5 100%);
+}
+
+.summary-card.pending {
+    border-left-color: var(--warning-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #fffbeb 100%);
+}
+
+.summary-card.overdue {
+    border-left-color: var(--danger-color);
+    background: linear-gradient(135deg, var(--card-bg) 0%, #fef2f2 100%);
 }
 
 .summary-card i {
