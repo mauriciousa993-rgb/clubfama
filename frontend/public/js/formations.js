@@ -23,7 +23,7 @@ let deleteFormationId = null;
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
+    if (!checkAuth()) return;
     loadFormations();
     initializeCourt();
     setupEventListeners();
@@ -38,10 +38,17 @@ function checkAuth() {
 
     if (!token || !canManageFormations) {
         window.location.href = '../index.html';
-        return;
+        return false;
     }
     
     document.getElementById('userName').textContent = user.name || 'Usuario';
+
+    // Aplicar menú por rol (oculta opciones no permitidas para assistant)
+    if (typeof configureMenuByRole === 'function') {
+        configureMenuByRole(user.role);
+    }
+
+    return true;
 }
 
 // Configurar event listeners
