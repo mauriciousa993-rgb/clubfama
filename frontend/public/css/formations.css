@@ -821,6 +821,22 @@
     display: flex;
 }
 
+/* En pantallas táctiles no existe hover, mostrar controles siempre */
+@media (hover: none) and (pointer: coarse) {
+    .player-controls {
+        display: flex;
+        top: -28px;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .player-controls button {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+}
+
 .player-controls button {
     width: 24px;
     height: 24px;

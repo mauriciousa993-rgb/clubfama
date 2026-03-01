@@ -214,6 +214,8 @@ function makeDraggable(element, playerNumber) {
     let isDragging = false;
     let startX, startY;
     let startPercentX, startPercentY;
+    let touchMoved = false;
+    let touchStartTime = 0;
     
     element.addEventListener('mousedown', (e) => {
         if (e.target.closest('.player-controls')) return;
@@ -293,6 +295,8 @@ function makeDraggable(element, playerNumber) {
         if (e.target.closest('.player-controls')) return;
         
         isDragging = true;
+        touchMoved = false;
+        touchStartTime = Date.now();
         element.classList.add('dragging');
         
         const court = document.getElementById('basketballCourt');
@@ -319,6 +323,11 @@ function makeDraggable(element, playerNumber) {
         
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
+
+        // Si hubo desplazamiento real, lo consideramos arrastre y no "tap"
+        if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+            touchMoved = true;
+        }
         
         const deltaPercentX = (deltaX / courtRect.width) * 100;
         const deltaPercentY = (deltaY / courtRect.height) * 100;
@@ -346,6 +355,15 @@ function makeDraggable(element, playerNumber) {
         if (isDragging) {
             isDragging = false;
             element.classList.remove('dragging');
+
+            // Toque corto sobre el jugador: asignar balón (útil en móviles sin hover)
+            const touchDuration = Date.now() - touchStartTime;
+            const isTap = !touchMoved && touchDuration < 300;
+            if (isTap) {
+                toggleBall(playerNumber);
+                return;
+            }
+
             saveCurrentStepPositions();
             showAutoSaveIndicator('Guardado ✓');
             lastSavedPositions = JSON.stringify(players.map(p => ({x: p.x, y: p.y, hasBall: p.hasBall})));
