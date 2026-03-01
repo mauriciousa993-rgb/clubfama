@@ -53,6 +53,12 @@ function checkAuth() {
         // Mostrar nombre del usuario en la sidebar
         const userNameElements = document.querySelectorAll('#userName');
         const userData = JSON.parse(user);
+
+        // Verificar acceso por rol a la página actual
+        if (!enforcePageAccessByRole(userData.role)) {
+            return false;
+        }
+
         userNameElements.forEach(el => {
             el.textContent = userData.name || userData.email;
         });
@@ -67,6 +73,53 @@ function checkAuth() {
         localStorage.removeItem('user');
         return false;
     }
+}
+
+function getCurrentPageName() {
+    const pathParts = window.location.pathname.split('/');
+    return (pathParts[pathParts.length - 1] || '').toLowerCase();
+}
+
+function getAllowedPagesByRole(role) {
+    if (role === 'admin') {
+        return ['dashboard.html', 'players.html', 'payments.html', 'calendar.html', 'formations.html', 'reports.html', 'birthdays.html'];
+    }
+
+    if (role === 'assistant') {
+        return ['calendar.html', 'formations.html', 'birthdays.html'];
+    }
+
+    return ['player-dashboard.html', 'player-profile.html', 'player-calendar.html', 'player-formations.html', 'birthdays.html'];
+}
+
+function getDefaultPageByRole(role) {
+    if (role === 'admin') return 'dashboard.html';
+    if (role === 'assistant') return 'calendar.html';
+    return 'player-dashboard.html';
+}
+
+function enforcePageAccessByRole(role) {
+    const path = window.location.pathname.toLowerCase();
+
+    // Solo aplicar control en páginas internas protegidas
+    if (!path.includes('/pages/')) {
+        return true;
+    }
+
+    const currentPage = getCurrentPageName();
+    const publicPages = ['register.html'];
+
+    if (publicPages.includes(currentPage)) {
+        return true;
+    }
+
+    const allowedPages = getAllowedPagesByRole(role);
+    if (!allowedPages.includes(currentPage)) {
+        window.location.href = getDefaultPageByRole(role);
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -112,6 +165,8 @@ async function login(email, password) {
                 // Redirigir según el rol
                 if (data.role === 'admin') {
                     window.location.href = 'pages/dashboard.html';
+                } else if (data.role === 'assistant') {
+                    window.location.href = 'pages/calendar.html';
                 } else {
                     // Verificar si el jugador necesita completar su perfil
                     const profileCompleted = await checkProfileCompletion(data.token);
@@ -231,53 +286,20 @@ function showForgotPassword() {
 
 // Configurar visibilidad del menú según el rol del usuario
 function configureMenuByRole(role) {
-    // IDs de los elementos del menú en el HTML
-    const menuItems = {
-        'dashboard': 'menu-dashboard',
-        'players': 'menu-players',
-        'payments': 'menu-payments',
-        'calendar': 'menu-calendar',
-        'formations': 'menu-formations',
-        'reports': 'menu-reports',
-        'birthdays': 'menu-birthdays'
-    };
-    
-    // Ocultar todos los elementos primero
-    Object.values(menuItems).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.display = 'none';
-        }
+    const allowedPages = getAllowedPagesByRole(role);
+    const navItems = document.querySelectorAll('.sidebar .nav-menu .nav-item');
+
+    navItems.forEach(item => {
+        const link = item.querySelector('a');
+        if (!link) return;
+
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        const targetPage = href.split('/').pop();
+
+        if (!targetPage.endsWith('.html')) return;
+
+        item.style.display = allowedPages.includes(targetPage) ? '' : 'none';
     });
-    
-    // Mostrar según el rol
-    if (role === 'admin') {
-        // Admin ve todo
-        Object.values(menuItems).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.display = '';
-            }
-        });
-    } else if (role === 'assistant') {
-        // Asistente ve: dashboard, calendar, formations, birthdays
-        const assistantMenus = ['menu-dashboard', 'menu-calendar', 'menu-formations', 'menu-birthdays'];
-        assistantMenus.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.display = '';
-            }
-        });
-    } else if (role === 'player') {
-        // Jugador ve: dashboard, calendar, formations, birthdays
-        const playerMenus = ['menu-dashboard', 'menu-calendar', 'menu-formations', 'menu-birthdays'];
-        playerMenus.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.style.display = '';
-            }
-        });
-    }
 }
 
 // Event Listeners

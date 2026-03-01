@@ -74,6 +74,27 @@ function setupNavigationMenu() {
                 </a>
             </li>
         `;
+    } else if (currentUserRole === 'assistant') {
+        navMenu.innerHTML = `
+            <li class="nav-item">
+                <a href="calendar.html">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendario</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="formations.html">
+                    <i class="fas fa-basketball-ball"></i>
+                    <span>Sistemas de Juego</span>
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a href="birthdays.html">
+                    <i class="fas fa-birthday-cake"></i>
+                    <span>Cumpleaños</span>
+                </a>
+            </li>
+        `;
     } else {
         navMenu.innerHTML = `
             <li class="nav-item">
@@ -107,6 +128,11 @@ function setupNavigationMenu() {
                 </a>
             </li>
         `;
+    }
+
+    // Aplicar reglas globales de visibilidad por rol después de crear el menú dinámico
+    if (typeof configureMenuByRole === 'function') {
+        configureMenuByRole(currentUserRole);
     }
 }
 

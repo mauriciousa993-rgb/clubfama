@@ -34,12 +34,14 @@ function checkAuth() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     
-    if (!token || user.role !== 'admin') {
+    const canManageFormations = user.role === 'admin' || user.role === 'assistant';
+
+    if (!token || !canManageFormations) {
         window.location.href = '../index.html';
         return;
     }
     
-    document.getElementById('userName').textContent = user.name || 'Administrador';
+    document.getElementById('userName').textContent = user.name || 'Usuario';
 }
 
 // Configurar event listeners
