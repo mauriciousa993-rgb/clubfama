@@ -397,7 +397,7 @@ async function handlePlayerSubmit(e) {
     const playerData = {
         name: document.getElementById('playerName').value,
         // Enviar fecha con hora del mediodía para evitar problema de zona horaria
-        birthDate: document.getElementById('playerBirthDate').value ? document.getElementById('playerBirthDate').value + 'T12:00:00' : null,
+        birth_date: document.getElementById('playerBirthDate').value ? document.getElementById('playerBirthDate').value + 'T12:00:00' : null,
         category: document.getElementById('playerCategory').value,
         position: document.getElementById('playerPosition').value,
         phone: document.getElementById('playerPhone').value,
