@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, adminOnly } = require('../middleware/auth');
+const { protect, adminOnly, adminOrAssistant } = require('../middleware/auth');
 const {
   createEvent,
   getEvents,
@@ -15,9 +15,9 @@ router.get('/', protect, getEvents);
 router.get('/upcoming', protect, getUpcomingEvents);
 router.get('/:id', protect, getEventById);
 
-// Rutas de administración (solo admin)
-router.post('/', protect, adminOnly, createEvent);
-router.put('/:id', protect, adminOnly, updateEvent);
-router.delete('/:id', protect, adminOnly, deleteEvent);
+// Rutas de administración (admin y asistente)
+router.post('/', protect, adminOrAssistant, createEvent);
+router.put('/:id', protect, adminOrAssistant, updateEvent);
+router.delete('/:id', protect, adminOrAssistant, deleteEvent);
 
 module.exports = router;

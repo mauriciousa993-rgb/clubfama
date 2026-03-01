@@ -48,4 +48,13 @@ const playerOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly, playerOnly };
+// Middleware para verificar si es admin o asistente
+const adminOrAssistant = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'assistant')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Acceso denegado, solo administradores o asistentes' });
+  }
+};
+
+module.exports = { protect, adminOnly, playerOnly, adminOrAssistant };

@@ -324,7 +324,9 @@ const updateUser = async (req, res) => {
       'medical_history', 'allergies', 'diseases', 'height', 'weight', 'eps', 'blood_type', 'emergency_contact',
       'father_name', 'father_phone', 'father_occupation',
       'mother_name', 'mother_phone', 'mother_occupation',
-      'education_level', 'institution', 'career_grade', 'semester'
+      'education_level', 'institution', 'career_grade', 'semester',
+      // Campos adicionales del formulario
+      'category', 'position', 'additionalInfo'
     ];
 
 

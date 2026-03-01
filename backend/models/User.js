@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'player'],
+    enum: ['admin', 'player', 'assistant'],
     default: 'player'
   },
   team_category: {
@@ -26,7 +26,20 @@ const userSchema = new mongoose.Schema({
     enum: ['infantil', 'mini', 'juvenil', 'elite'],
     default: null
   },
-
+  
+  // Campos adicionales para jugadores
+  category: {
+    type: String,
+    default: null
+  },
+  position: {
+    type: String,
+    default: null
+  },
+  additionalInfo: {
+    type: String,
+    default: null
+  },
 
   debt_status: {
     type: Boolean,
