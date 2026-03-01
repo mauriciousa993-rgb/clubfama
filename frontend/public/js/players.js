@@ -71,7 +71,7 @@ function renderPlayers(playersToRender) {
                 <p>${player.position || 'Jugador'} • ${player.email || ''}</p>
                 <div class="player-stats">
                     <span><i class="fas fa-phone"></i> ${player.phone || 'N/A'}</span>
-                    <span><i class="fas fa-birthday-cake"></i> ${calculateAge(player.birthDate) || 'N/A'} años</span>
+                    <span><i class="fas fa-birthday-cake"></i> ${calculateAge(player.birth_date) || 'N/A'} años</span>
                 </div>
                 <div class="player-actions">
                     <button class="btn-view" onclick="viewPlayer('${player._id}')">
@@ -93,8 +93,20 @@ function renderPlayers(playersToRender) {
 // Calcular edad
 function calculateAge(birthDate) {
     if (!birthDate) return null;
+    
+    // Crear fecha evitando el problema de zona horaria
+    let birth;
+    if (typeof birthDate === 'string') {
+        // Si es un string ISO, extraer solo la parte de fecha
+        const datePart = birthDate.split('T')[0];
+        birth = new Date(datePart + 'T12:00:00'); // Mediodía para evitar problemas de zona horaria
+    } else {
+        birth = new Date(birthDate);
+    }
+    
+    if (isNaN(birth.getTime())) return null;
+    
     const today = new Date();
-    const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
@@ -112,6 +124,16 @@ function showAddPlayerModal() {
         <i class="fas fa-camera"></i>
         <span>Click para subir foto</span>
     `;
+    
+    // Mostrar campo de contraseña para nuevo jugador
+    const passwordRow = document.getElementById('passwordRow');
+    if (passwordRow) {
+        passwordRow.style.display = 'flex';
+    }
+    
+    // Hacer email requerido para nuevo jugador
+    document.getElementById('playerEmail').required = true;
+    
     document.getElementById('playerModal').classList.add('active');
 }
 
@@ -131,7 +153,13 @@ function viewPlayer(id) {
     modalTitle.innerHTML = `<i class="fas fa-user"></i> ${player.name}`;
     
     // Formatear fechas
-    const birthDate = player.birth_date ? new Date(player.birth_date).toLocaleDateString('es-ES') : 'No registrada';
+    let birthDateStr = 'No registrada';
+    if (player.birth_date) {
+        // Extraer solo la parte de fecha para evitar problema de zona horaria
+        const datePart = player.birth_date.split('T')[0];
+        const [year, month, day] = datePart.split('-');
+        birthDateStr = `${day}/${month}/${year}`;
+    }
     const age = calculateAge(player.birth_date);
     
     // Información de contacto de emergencia
@@ -172,7 +200,7 @@ function viewPlayer(id) {
                     </div>
                     <div class="profile-item">
                         <label>Fecha de nacimiento:</label>
-                        <span>${birthDate} ${age ? `(${age} años)` : ''}</span>
+                        <span>${birthDateStr} ${age ? `(${age} años)` : ''}</span>
                     </div>
                     <div class="profile-item">
                         <label>Teléfono:</label>
@@ -317,14 +345,32 @@ function editPlayer(id) {
     
     editingPlayerId = id;
     document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar Jugador';
+    
+    // Ocultar campo de contraseña para edición
+    const passwordRow = document.getElementById('passwordRow');
+    if (passwordRow) {
+        passwordRow.style.display = 'none';
+    }
+    
+    // No requerir email en modo edición
+    document.getElementById('playerEmail').required = false;
+    
+    // Llenar los campos del formulario
     document.getElementById('playerName').value = player.name || '';
-    document.getElementById('playerBirthDate').value = player.birthDate ? player.birthDate.split('T')[0] : '';
+    
+    // Manejar fecha de nacimiento correctamente para evitar problema de zona horaria
+    if (player.birth_date) {
+        const birthDate = player.birth_date.split('T')[0];
+        document.getElementById('playerBirthDate').value = birthDate;
+    } else {
+        document.getElementById('playerBirthDate').value = '';
+    }
+    
     document.getElementById('playerCategory').value = player.category || 'infantil';
-
-
     document.getElementById('playerPosition').value = player.position || 'base';
     document.getElementById('playerPhone').value = player.phone || '';
     document.getElementById('playerEmail').value = player.email || '';
+    document.getElementById('playerPassword').value = '';
     document.getElementById('playerInfo').value = player.additionalInfo || '';
     
     document.getElementById('playerModal').classList.add('active');
@@ -350,20 +396,32 @@ async function handlePlayerSubmit(e) {
     
     const playerData = {
         name: document.getElementById('playerName').value,
-        birthDate: document.getElementById('playerBirthDate').value,
+        // Enviar fecha con hora del mediodía para evitar problema de zona horaria
+        birthDate: document.getElementById('playerBirthDate').value ? document.getElementById('playerBirthDate').value + 'T12:00:00' : null,
         category: document.getElementById('playerCategory').value,
         position: document.getElementById('playerPosition').value,
         phone: document.getElementById('playerPhone').value,
         email: document.getElementById('playerEmail').value,
-        password: document.getElementById('playerPassword').value,
         team_category: document.getElementById('playerTeamCategory').value,
         additionalInfo: document.getElementById('playerInfo').value,
         role: 'player' // Rol automático de jugador
     };
     
-    // Validar contraseña mínima
-    if (!editingPlayerId && playerData.password.length < 6) {
+    // Solo agregar contraseña si es nuevo jugador y tiene valor
+    const password = document.getElementById('playerPassword').value;
+    if (!editingPlayerId && password) {
+        playerData.password = password;
+    }
+    
+    // Validar contraseña solo para nuevo jugador
+    if (!editingPlayerId && (!password || password.length < 6)) {
         showToast('La contraseña debe tener al menos 6 caracteres', 'error');
+        return;
+    }
+    
+    // Validar email solo para nuevo jugador
+    if (!editingPlayerId && !playerData.email) {
+        showToast('El correo electrónico es requerido para nuevos jugadores', 'error');
         return;
     }
     

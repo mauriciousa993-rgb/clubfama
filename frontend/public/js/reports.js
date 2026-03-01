@@ -479,8 +479,20 @@ function exportReport() {
 // Calcular edad
 function calculateAge(birthDate) {
     if (!birthDate) return null;
+    
+    // Crear fecha evitando el problema de zona horaria
+    let birth;
+    if (typeof birthDate === 'string') {
+        // Si es un string ISO, extraer solo la parte de fecha
+        const datePart = birthDate.split('T')[0];
+        birth = new Date(datePart + 'T12:00:00'); // Mediodía para evitar problemas de zona horaria
+    } else {
+        birth = new Date(birthDate);
+    }
+    
+    if (isNaN(birth.getTime())) return null;
+    
     const today = new Date();
-    const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
