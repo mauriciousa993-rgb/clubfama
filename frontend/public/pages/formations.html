@@ -229,7 +229,6 @@
                         <div id="basketballCourt" class="basketball-court">
                             <!-- Cancha SVG -->
                             <svg viewBox="0 0 500 470" class="court-svg" preserveAspectRatio="xMidYMid meet" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                <!-- Definiciones de gradientes, filtros e imagen de cancha -->
                                 <defs>
                                     <pattern id="courtImage" patternUnits="userSpaceOnUse" width="500" height="470">
                                         <image href="../images/court-background.jpg"
@@ -237,69 +236,9 @@
                                                x="0" y="0" width="500" height="470"
                                                preserveAspectRatio="xMidYMid slice"/>
                                     </pattern>
-                                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
-                                    </filter>
                                 </defs>
-                                
-                                <!-- Fondo de cancha con imagen -->
                                 <rect x="0" y="0" width="500" height="470" fill="#c17f59"/>
                                 <rect x="0" y="0" width="500" height="470" fill="url(#courtImage)"/>
-
-                                
-                                <!-- Zona de fondo (pintura) - área restringida -->
-                                <path d="M 50,50 L 450,50 L 450,140 Q 250,180 50,140 Z" 
-                                      fill="#b8724d" stroke="none"/>
-                                
-                                <!-- Líneas principales del campo -->
-                                <rect x="50" y="50" width="400" height="370" 
-                                      fill="none" stroke="white" stroke-width="3"/>
-                                
-                                <!-- Línea de medio campo -->
-                                <line x1="50" y1="235" x2="450" y2="235" 
-                                      stroke="white" stroke-width="3"/>
-                                
-                                <!-- Círculo central -->
-                                <circle cx="250" cy="235" r="60" 
-                                        fill="none" stroke="white" stroke-width="3"/>
-                                <circle cx="250" cy="235" r="5" 
-                                        fill="white"/>
-                                
-                                <!-- Aro y zona restringida -->
-                                <path d="M 190,50 L 190,130 Q 250,155 310,130 L 310,50" 
-                                      fill="none" stroke="white" stroke-width="3"/>
-                                <circle cx="250" cy="90" r="30" 
-                                        fill="none" stroke="white" stroke-width="3"/>
-                                <!-- Tablero -->
-                                <rect x="220" y="45" width="60" height="8" 
-                                      fill="white" stroke="none"/>
-                                
-                                <!-- Línea de 3 puntos - ARCO COMPLETO -->
-                                <path d="M 50,190 Q 250,20 450,190" 
-                                      fill="none" stroke="white" stroke-width="4"/>
-                                <!-- Líneas rectas de 3 puntos laterales -->
-                                <line x1="50" y1="190" x2="50" y2="50" 
-                                      stroke="white" stroke-width="4"/>
-                                <line x1="450" y1="190" x2="450" y2="50" 
-                                      stroke="white" stroke-width="4"/>
-                                
-                                <!-- Líneas de tiro libre -->
-                                <line x1="190" y1="130" x2="190" y2="340" 
-                                      stroke="white" stroke-width="3"/>
-                                <line x1="310" y1="130" x2="310" y2="340" 
-                                      stroke="white" stroke-width="3"/>
-                                <line x1="190" y1="340" x2="310" y2="340" 
-                                      stroke="white" stroke-width="3"/>
-                                
-                                <!-- Círculo de tiro libre -->
-                                <circle cx="250" cy="340" r="60" 
-                                        fill="none" stroke="white" stroke-width="3"/>
-                                
-                                <!-- Marcas de esquina -->
-                                <line x1="50" y1="420" x2="90" y2="420" 
-                                      stroke="white" stroke-width="3"/>
-                                <line x1="410" y1="420" x2="450" y2="420" 
-                                      stroke="white" stroke-width="3"/>
                             </svg>
 
                             

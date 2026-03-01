@@ -95,13 +95,13 @@ function initializeCourt() {
     playersLayer.innerHTML = '';
     players = [];
     
-    // Posiciones iniciales (formación básica)
+    // Posiciones iniciales base (media cancha ofensiva)
     const initialPositions = [
-        { x: 50, y: 15 },   // P1 - Base
-        { x: 25, y: 35 },   // P2 - Escolta
-        { x: 75, y: 35 },   // P3 - Alero
-        { x: 35, y: 65 },   // P4 - Ala-pívot
-        { x: 65, y: 65 }    // P5 - Pívot
+        { x: 50, y: 56, hasBall: true },   // P1 - Armador (tope)
+        { x: 24, y: 39, hasBall: false },  // P2 - Alero izquierdo (altura TL)
+        { x: 76, y: 39, hasBall: false },  // P3 - Alero derecho (altura TL)
+        { x: 43, y: 31, hasBall: false },  // P4 - Poste izquierdo (debajo del aro, fuera zona restringida)
+        { x: 57, y: 31, hasBall: false }   // P5 - Poste derecho (debajo del aro, fuera zona restringida)
     ];
     
     for (let i = 1; i <= 5; i++) {
@@ -118,6 +118,8 @@ function initializeCourt() {
 
 // Crear elemento de jugador
 function createPlayerElement(number, position) {
+    const hasBall = Boolean(position.hasBall);
+
     const div = document.createElement('div');
     div.className = 'court-player';
     div.id = `player-${number}`;
@@ -126,11 +128,11 @@ function createPlayerElement(number, position) {
     
     div.innerHTML = `
         <div class="player-controls">
-            <button class="btn-ball" onclick="toggleBall(${number})" title="Tiene balón">
+            <button class="btn-ball ${hasBall ? 'active' : ''}" onclick="toggleBall(${number})" title="Tiene balón">
                 <i class="fas fa-basketball-ball"></i>
             </button>
         </div>
-        <div class="player-jersey" id="jersey-${number}">
+        <div class="player-jersey${hasBall ? ' has-ball' : ''}" id="jersey-${number}">
             ${number}
         </div>
         <div class="player-label">J${number}</div>
@@ -144,7 +146,7 @@ function createPlayerElement(number, position) {
         element: div,
         x: position.x,
         y: position.y,
-        hasBall: false
+        hasBall: hasBall
     };
 }
 
