@@ -56,6 +56,10 @@ function checkAuth() {
         userNameElements.forEach(el => {
             el.textContent = userData.name || userData.email;
         });
+        
+        // Configurar menú según el rol
+        configureMenuByRole(userData.role);
+        
         return true;
     } catch (error) {
         console.error('Error parsing user data:', error);
@@ -223,6 +227,57 @@ function togglePassword() {
 
 function showForgotPassword() {
     alert('Función de recuperación de contraseña en desarrollo');
+}
+
+// Configurar visibilidad del menú según el rol del usuario
+function configureMenuByRole(role) {
+    // IDs de los elementos del menú en el HTML
+    const menuItems = {
+        'dashboard': 'menu-dashboard',
+        'players': 'menu-players',
+        'payments': 'menu-payments',
+        'calendar': 'menu-calendar',
+        'formations': 'menu-formations',
+        'reports': 'menu-reports',
+        'birthdays': 'menu-birthdays'
+    };
+    
+    // Ocultar todos los elementos primero
+    Object.values(menuItems).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = 'none';
+        }
+    });
+    
+    // Mostrar según el rol
+    if (role === 'admin') {
+        // Admin ve todo
+        Object.values(menuItems).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = '';
+            }
+        });
+    } else if (role === 'assistant') {
+        // Asistente ve: dashboard, calendar, formations, birthdays
+        const assistantMenus = ['menu-dashboard', 'menu-calendar', 'menu-formations', 'menu-birthdays'];
+        assistantMenus.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = '';
+            }
+        });
+    } else if (role === 'player') {
+        // Jugador ve: dashboard, calendar, formations, birthdays
+        const playerMenus = ['menu-dashboard', 'menu-calendar', 'menu-formations', 'menu-birthdays'];
+        playerMenus.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = '';
+            }
+        });
+    }
 }
 
 // Event Listeners
