@@ -63,7 +63,9 @@ function renderPayments(paymentsToRender) {
         const playerName = payment.player_ref?.name || payment.playerName || 'Jugador';
         
         // Obtener mes desde month_covered o month
-        const monthDisplay = payment.month_covered || getMonthName(payment.month);
+        const monthDisplay = payment.month_covered
+            ? normalizeMonthToSpanish(payment.month_covered)
+            : getMonthName(payment.month);
         
         // Fecha de subida o fecha de pago
         const dateDisplay = payment.date_uploaded ? formatDate(payment.date_uploaded) : 
@@ -130,6 +132,57 @@ function getMonthName(month) {
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
     return months[month - 1] || month;
+}
+
+function normalizeMonthToEnglish(month) {
+    const value = String(month || '').trim().toLowerCase();
+    const monthMap = {
+        january: 'January',
+        february: 'February',
+        march: 'March',
+        april: 'April',
+        may: 'May',
+        june: 'June',
+        july: 'July',
+        august: 'August',
+        september: 'September',
+        october: 'October',
+        november: 'November',
+        december: 'December',
+        enero: 'January',
+        febrero: 'February',
+        marzo: 'March',
+        abril: 'April',
+        mayo: 'May',
+        junio: 'June',
+        julio: 'July',
+        agosto: 'August',
+        septiembre: 'September',
+        setiembre: 'September',
+        octubre: 'October',
+        noviembre: 'November',
+        diciembre: 'December'
+    };
+    return monthMap[value] || '';
+}
+
+function normalizeMonthToSpanish(month) {
+    const englishMonth = normalizeMonthToEnglish(month);
+    const monthMap = {
+        January: 'Enero',
+        February: 'Febrero',
+        March: 'Marzo',
+        April: 'Abril',
+        May: 'Mayo',
+        June: 'Junio',
+        July: 'Julio',
+        August: 'Agosto',
+        September: 'Septiembre',
+        October: 'Octubre',
+        November: 'Noviembre',
+        December: 'Diciembre'
+    };
+    return monthMap[englishMonth] || month;
 }
 
 // Obtener icono de método de pago
@@ -220,7 +273,7 @@ function updateSummary() {
     const currentYear = new Date().getFullYear();
 
     const monthlyPayments = payments.filter(p => {
-        const monthCovered = (p.month_covered || '').toLowerCase();
+        const monthCovered = normalizeMonthToEnglish(p.month_covered).toLowerCase();
         const isCurrentMonth = monthCovered === currentMonthName.toLowerCase();
         const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
         if (!paymentDate) {
