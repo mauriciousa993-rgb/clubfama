@@ -184,6 +184,10 @@ function normalizeMonthToSpanish(month) {
     return monthMap[englishMonth] || month;
 }
 
+function getPaymentMonthSpanish(payment) {
+    return normalizeMonthToSpanish(payment.month_covered || getMonthName(payment.month));
+}
+
 // Obtener icono de método de pago
 function getPaymentIcon(method) {
     const icons = {
@@ -270,20 +274,14 @@ async function rejectPayment(id) {
 function updateSummary() {
     const selectedMonth = (document.getElementById('monthFilter')?.value || '').toLowerCase();
     const currentMonthName = new Date().toLocaleString('en-US', { month: 'long' });
-    const currentYear = new Date().getFullYear();
 
     const paymentsForSummary = payments.filter(p => {
-        const monthCoveredSpanish = normalizeMonthToSpanish(p.month_covered || getMonthName(p.month)).toLowerCase();
-        const monthCoveredEnglish = normalizeMonthToEnglish(p.month_covered).toLowerCase();
+        const monthCoveredSpanish = getPaymentMonthSpanish(p).toLowerCase();
+        const monthCoveredEnglish = normalizeMonthToEnglish(p.month_covered || '').toLowerCase();
         const isSelectedMonth = selectedMonth
             ? monthCoveredSpanish === selectedMonth
             : monthCoveredEnglish === currentMonthName.toLowerCase();
-        const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
-        if (!paymentDate) {
-            return false;
-        }
-        const isCurrentYear = paymentDate.getFullYear() === currentYear;
-        return isSelectedMonth && isCurrentYear;
+        return isSelectedMonth;
     });
 
     const monthlyPayments = paymentsForSummary.filter(p => p.status === 'approved');
@@ -446,7 +444,7 @@ function applyPaymentsFilters() {
     
     if (month) {
         filtered = filtered.filter((p) => {
-            const monthText = normalizeMonthToSpanish(p.month_covered || getMonthName(p.month)).toLowerCase();
+            const monthText = getPaymentMonthSpanish(p).toLowerCase();
             return monthText === month;
         });
     }
