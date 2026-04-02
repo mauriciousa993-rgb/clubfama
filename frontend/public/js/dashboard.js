@@ -366,11 +366,14 @@ function renderStudentMonthlySummary() {
 
     const selectedStudent = studentFilter ? studentFilter.value : 'all';
     const selectedMonth = monthFilter ? monthFilter.value : 'all';
+    const selectedMonthNormalized = selectedMonth === 'all'
+        ? 'all'
+        : normalizeMonthToEnglish(selectedMonth);
     const selectedYear = yearFilter ? yearFilter.value : 'all';
 
     const filteredRows = studentMonthlySummaryRows.filter((row) => {
         const matchStudent = selectedStudent === 'all' || row.playerName === selectedStudent;
-        const matchMonth = selectedMonth === 'all' || row.monthCovered === selectedMonth;
+        const matchMonth = selectedMonthNormalized === 'all' || row.monthCovered === selectedMonthNormalized;
         const matchYear = selectedYear === 'all' || String(row.year) === selectedYear;
         return matchStudent && matchMonth && matchYear;
     });
