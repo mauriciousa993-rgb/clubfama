@@ -37,8 +37,7 @@ async function loadPayments() {
         
         if (response.ok) {
             payments = await response.json();
-            renderPayments(payments);
-            updateSummary();
+            applyPaymentsFilters();
         } else {
             tbody.innerHTML = '<tr><td colspan="8">Error al cargar pagos</td></tr>';
         }
@@ -269,28 +268,33 @@ async function rejectPayment(id) {
 
 // Actualizar resumen
 function updateSummary() {
+    const selectedMonth = (document.getElementById('monthFilter')?.value || '').toLowerCase();
     const currentMonthName = new Date().toLocaleString('en-US', { month: 'long' });
     const currentYear = new Date().getFullYear();
 
-    const monthlyPayments = payments.filter(p => {
-        const monthCovered = normalizeMonthToEnglish(p.month_covered).toLowerCase();
-        const isCurrentMonth = monthCovered === currentMonthName.toLowerCase();
+    const paymentsForSummary = payments.filter(p => {
+        const monthCoveredSpanish = normalizeMonthToSpanish(p.month_covered || getMonthName(p.month)).toLowerCase();
+        const monthCoveredEnglish = normalizeMonthToEnglish(p.month_covered).toLowerCase();
+        const isSelectedMonth = selectedMonth
+            ? monthCoveredSpanish === selectedMonth
+            : monthCoveredEnglish === currentMonthName.toLowerCase();
         const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
         if (!paymentDate) {
             return false;
         }
         const isCurrentYear = paymentDate.getFullYear() === currentYear;
-        return isCurrentMonth && isCurrentYear && p.status === 'approved';
+        return isSelectedMonth && isCurrentYear;
     });
 
+    const monthlyPayments = paymentsForSummary.filter(p => p.status === 'approved');
     const totalIncome = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
     document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
 
-    const pending = payments.filter(p => p.status === 'pending');
+    const pending = paymentsForSummary.filter(p => p.status === 'pending');
     const pendingAmount = pending.reduce((sum, p) => sum + (p.amount || 0), 0);
     document.getElementById('pendingAmount').textContent = formatCurrency(pendingAmount);
 
-    const rejected = payments.filter(p => p.status === 'rejected');
+    const rejected = paymentsForSummary.filter(p => p.status === 'rejected');
     const rejectedAmount = rejected.reduce((sum, p) => sum + (p.amount || 0), 0);
     document.getElementById('overdueAmount').textContent = formatCurrency(rejectedAmount);
 }
@@ -426,7 +430,7 @@ function filterPayments() {
 
 function applyPaymentsFilters() {
     const searchTerm = (document.getElementById('searchPayment')?.value || '').toLowerCase().trim();
-    const month = document.getElementById('monthFilter').value;
+    const month = (document.getElementById('monthFilter')?.value || '').toLowerCase();
     const status = document.getElementById('statusFilter').value;
     
     let filtered = [...payments];
@@ -441,7 +445,10 @@ function applyPaymentsFilters() {
     }
     
     if (month) {
-        filtered = filtered.filter((p) => getPaymentMonthNumber(p) === parseInt(month, 10));
+        filtered = filtered.filter((p) => {
+            const monthText = normalizeMonthToSpanish(p.month_covered || getMonthName(p.month)).toLowerCase();
+            return monthText === month;
+        });
     }
     
     if (status) {
@@ -449,27 +456,5 @@ function applyPaymentsFilters() {
     }
     
     renderPayments(filtered);
-}
-
-function getPaymentMonthNumber(payment) {
-    if (payment.month_covered) {
-        const englishMonth = normalizeMonthToEnglish(payment.month_covered);
-        const monthNumbers = {
-            January: 1,
-            February: 2,
-            March: 3,
-            April: 4,
-            May: 5,
-            June: 6,
-            July: 7,
-            August: 8,
-            September: 9,
-            October: 10,
-            November: 11,
-            December: 12
-        };
-        return monthNumbers[englishMonth] || null;
-    }
-
-    return Number(payment.month) || null;
+    updateSummary();
 }
