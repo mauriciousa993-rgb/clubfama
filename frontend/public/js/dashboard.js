@@ -130,7 +130,7 @@ async function loadStats() {
             const currentYear = new Date().getFullYear();
             
             const monthlyPayments = payments.filter(p => {
-                const monthCovered = (p.month_covered || '').toLowerCase();
+                const monthCovered = normalizeMonthToEnglish(p.month_covered).toLowerCase();
                 const currentMonthName = new Date().toLocaleString('en-US', { month: 'long' }).toLowerCase();
                 const paymentDate = p.date_uploaded ? new Date(p.date_uploaded) : null;
                 const isCurrentYear = paymentDate ? paymentDate.getFullYear() === currentYear : true;
@@ -217,21 +217,6 @@ async function loadStudentMonthlySummary() {
             return;
         }
 
-        const monthToNumber = {
-            January: 1,
-            February: 2,
-            March: 3,
-            April: 4,
-            May: 5,
-            June: 6,
-            July: 7,
-            August: 8,
-            September: 9,
-            October: 10,
-            November: 11,
-            December: 12
-        };
-
         const numberToEnglishMonth = {
             1: 'January',
             2: 'February',
@@ -251,10 +236,10 @@ async function loadStudentMonthlySummary() {
 
         payments.forEach((payment) => {
             const playerName = payment.player_ref?.name || payment.playerName || 'Jugador';
-            const monthCovered = payment.month_covered || '';
+            const monthCovered = normalizeMonthToEnglish(payment.month_covered);
             const paymentDate = payment.date_uploaded ? new Date(payment.date_uploaded) : new Date();
             const year = paymentDate.getFullYear();
-            const monthNumber = monthToNumber[monthCovered] || (paymentDate.getMonth() + 1);
+            const monthNumber = monthNameToNumber(monthCovered) || (paymentDate.getMonth() + 1);
             const normalizedMonth = monthCovered || numberToEnglishMonth[monthNumber] || '';
             const monthKey = `${year}-${String(monthNumber).padStart(2, '0')}`;
             const mapKey = `${playerName}__${monthKey}`;
@@ -622,6 +607,7 @@ async function rejectPayment(paymentId) {
 
 // Helper para traducir meses
 function translateMonth(month) {
+    const normalizedMonth = normalizeMonthToEnglish(month);
     const months = {
         'January': 'Enero',
         'February': 'Febrero',
@@ -636,7 +622,57 @@ function translateMonth(month) {
         'November': 'Noviembre',
         'December': 'Diciembre'
     };
-    return months[month] || month;
+    return months[normalizedMonth] || month;
+}
+
+function monthNameToNumber(monthName) {
+    const monthNumbers = {
+        January: 1,
+        February: 2,
+        March: 3,
+        April: 4,
+        May: 5,
+        June: 6,
+        July: 7,
+        August: 8,
+        September: 9,
+        October: 10,
+        November: 11,
+        December: 12
+    };
+    return monthNumbers[monthName] || null;
+}
+
+function normalizeMonthToEnglish(month) {
+    const value = String(month || '').trim().toLowerCase();
+    const monthMap = {
+        january: 'January',
+        february: 'February',
+        march: 'March',
+        april: 'April',
+        may: 'May',
+        june: 'June',
+        july: 'July',
+        august: 'August',
+        september: 'September',
+        october: 'October',
+        november: 'November',
+        december: 'December',
+        enero: 'January',
+        febrero: 'February',
+        marzo: 'March',
+        abril: 'April',
+        mayo: 'May',
+        junio: 'June',
+        julio: 'July',
+        agosto: 'August',
+        septiembre: 'September',
+        setiembre: 'September',
+        octubre: 'October',
+        noviembre: 'November',
+        diciembre: 'December'
+    };
+    return monthMap[value] || '';
 }
 
 // Helper para mostrar toast
