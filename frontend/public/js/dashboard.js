@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar menú móvil
     initMobileMenu();
+
+    // Inicializar filtros del resumen mensual
+    initStudentMonthlySummaryFilters();
     
     // Cargar datos del dashboard
     loadDashboardData();
@@ -12,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostrar fecha actual
     showCurrentDate();
 });
+
+let studentMonthlySummaryRows = [];
 
 // Inicializar menú móvil
 function initMobileMenu() {
@@ -82,6 +87,9 @@ async function loadDashboardData() {
         
         // Cargar pagos pendientes (solo admin)
         await loadPendingPayments();
+
+        // Cargar resumen mensual por estudiante
+        await loadStudentMonthlySummary();
         
         // Cargar pagos recientes
         await loadRecentPayments();
@@ -182,6 +190,230 @@ async function loadRecentPayments() {
         console.error('Error loading recent payments:', error);
         tbody.innerHTML = '<tr><td colspan="5">Error al cargar pagos</td></tr>';
     }
+}
+
+// Cargar resumen mensual por estudiante
+async function loadStudentMonthlySummary() {
+    const tbody = document.getElementById('studentMonthlySummaryBody');
+    const emptyState = document.getElementById('noStudentMonthlySummary');
+    if (!tbody) return;
+
+    try {
+        const response = await fetch(`${API_URL}/payments`, {
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            tbody.innerHTML = '<tr><td colspan="7">Error al cargar el resumen mensual</td></tr>';
+            if (emptyState) emptyState.style.display = 'none';
+            return;
+        }
+
+        const payments = await response.json();
+
+        if (!payments.length) {
+            tbody.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'block';
+            return;
+        }
+
+        const monthToNumber = {
+            January: 1,
+            February: 2,
+            March: 3,
+            April: 4,
+            May: 5,
+            June: 6,
+            July: 7,
+            August: 8,
+            September: 9,
+            October: 10,
+            November: 11,
+            December: 12
+        };
+
+        const numberToEnglishMonth = {
+            1: 'January',
+            2: 'February',
+            3: 'March',
+            4: 'April',
+            5: 'May',
+            6: 'June',
+            7: 'July',
+            8: 'August',
+            9: 'September',
+            10: 'October',
+            11: 'November',
+            12: 'December'
+        };
+
+        const summaryMap = new Map();
+
+        payments.forEach((payment) => {
+            const playerName = payment.player_ref?.name || payment.playerName || 'Jugador';
+            const monthCovered = payment.month_covered || '';
+            const paymentDate = payment.date_uploaded ? new Date(payment.date_uploaded) : new Date();
+            const year = paymentDate.getFullYear();
+            const monthNumber = monthToNumber[monthCovered] || (paymentDate.getMonth() + 1);
+            const normalizedMonth = monthCovered || numberToEnglishMonth[monthNumber] || '';
+            const monthKey = `${year}-${String(monthNumber).padStart(2, '0')}`;
+            const mapKey = `${playerName}__${monthKey}`;
+
+            if (!summaryMap.has(mapKey)) {
+                summaryMap.set(mapKey, {
+                    playerName,
+                    monthCovered: normalizedMonth,
+                    year,
+                    monthNumber,
+                    approvedTotal: 0,
+                    approvedCount: 0,
+                    pendingCount: 0,
+                    rejectedCount: 0,
+                    lastDate: null
+                });
+            }
+
+            const row = summaryMap.get(mapKey);
+            const amount = Number(payment.amount) || 0;
+
+            if (payment.status === 'approved') {
+                row.approvedTotal += amount;
+                row.approvedCount += 1;
+            } else if (payment.status === 'rejected') {
+                row.rejectedCount += 1;
+            } else {
+                row.pendingCount += 1;
+            }
+
+            if (!row.lastDate || paymentDate > row.lastDate) {
+                row.lastDate = paymentDate;
+            }
+        });
+
+        const summaryRows = Array.from(summaryMap.values()).sort((a, b) => {
+            const dateA = new Date(a.year, a.monthNumber - 1, 1);
+            const dateB = new Date(b.year, b.monthNumber - 1, 1);
+            if (dateB.getTime() !== dateA.getTime()) {
+                return dateB - dateA;
+            }
+            return a.playerName.localeCompare(b.playerName, 'es');
+        });
+
+        studentMonthlySummaryRows = summaryRows;
+        populateSummaryStudentFilter(summaryRows);
+        populateSummaryYearFilter(summaryRows);
+        renderStudentMonthlySummary();
+
+        if (emptyState) emptyState.style.display = 'none';
+    } catch (error) {
+        console.error('Error loading monthly summary:', error);
+        tbody.innerHTML = '<tr><td colspan="7">Error al cargar el resumen mensual</td></tr>';
+        if (emptyState) emptyState.style.display = 'none';
+    }
+}
+
+function initStudentMonthlySummaryFilters() {
+    const studentFilter = document.getElementById('summaryStudentFilter');
+    const monthFilter = document.getElementById('summaryMonthFilter');
+    const yearFilter = document.getElementById('summaryYearFilter');
+
+    if (studentFilter) {
+        studentFilter.addEventListener('change', renderStudentMonthlySummary);
+    }
+
+    if (monthFilter) {
+        monthFilter.addEventListener('change', renderStudentMonthlySummary);
+    }
+
+    if (yearFilter) {
+        yearFilter.addEventListener('change', renderStudentMonthlySummary);
+    }
+}
+
+function populateSummaryStudentFilter(rows) {
+    const studentFilter = document.getElementById('summaryStudentFilter');
+    if (!studentFilter) return;
+
+    const selectedValue = studentFilter.value || 'all';
+    const students = [...new Set(rows.map((row) => row.playerName))]
+        .sort((a, b) => a.localeCompare(b, 'es'));
+
+    studentFilter.innerHTML = [
+        '<option value="all">Todos</option>',
+        ...students.map((student) => `<option value="${student}">${student}</option>`)
+    ].join('');
+
+    if (students.includes(selectedValue)) {
+        studentFilter.value = selectedValue;
+    } else {
+        studentFilter.value = 'all';
+    }
+}
+
+function populateSummaryYearFilter(rows) {
+    const yearFilter = document.getElementById('summaryYearFilter');
+    if (!yearFilter) return;
+
+    const selectedValue = yearFilter.value || 'all';
+    const years = [...new Set(rows.map((row) => row.year))].sort((a, b) => b - a);
+
+    yearFilter.innerHTML = [
+        '<option value="all">Todos</option>',
+        ...years.map((year) => `<option value="${year}">${year}</option>`)
+    ].join('');
+
+    if (years.some((year) => String(year) === selectedValue)) {
+        yearFilter.value = selectedValue;
+    } else {
+        yearFilter.value = 'all';
+    }
+}
+
+function renderStudentMonthlySummary() {
+    const tbody = document.getElementById('studentMonthlySummaryBody');
+    const emptyState = document.getElementById('noStudentMonthlySummary');
+    const emptyText = emptyState ? emptyState.querySelector('p') : null;
+    const studentFilter = document.getElementById('summaryStudentFilter');
+    const monthFilter = document.getElementById('summaryMonthFilter');
+    const yearFilter = document.getElementById('summaryYearFilter');
+
+    if (!tbody) return;
+
+    const selectedStudent = studentFilter ? studentFilter.value : 'all';
+    const selectedMonth = monthFilter ? monthFilter.value : 'all';
+    const selectedYear = yearFilter ? yearFilter.value : 'all';
+
+    const filteredRows = studentMonthlySummaryRows.filter((row) => {
+        const matchStudent = selectedStudent === 'all' || row.playerName === selectedStudent;
+        const matchMonth = selectedMonth === 'all' || row.monthCovered === selectedMonth;
+        const matchYear = selectedYear === 'all' || String(row.year) === selectedYear;
+        return matchStudent && matchMonth && matchYear;
+    });
+
+    if (!filteredRows.length) {
+        tbody.innerHTML = '';
+        if (emptyText) {
+            emptyText.textContent = studentMonthlySummaryRows.length
+                ? 'No hay resultados para el filtro seleccionado'
+                : 'No hay pagos registrados para resumir';
+        }
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+    }
+
+    tbody.innerHTML = filteredRows.map((row) => `
+        <tr>
+            <td>${row.playerName}</td>
+            <td>${translateMonth(row.monthCovered)} ${row.year}</td>
+            <td>${formatCurrency(row.approvedTotal)}</td>
+            <td>${row.approvedCount}</td>
+            <td>${row.pendingCount}</td>
+            <td>${row.rejectedCount}</td>
+            <td>${row.lastDate ? formatDate(row.lastDate) : '-'}</td>
+        </tr>
+    `).join('');
+
+    if (emptyState) emptyState.style.display = 'none';
 }
 
 // Cargar próximos eventos desde API (sincronizados entre todos los dispositivos)
@@ -348,6 +580,7 @@ async function approvePayment(paymentId) {
             showToast('Pago aprobado exitosamente', 'success');
             loadPendingPayments();
             loadStats();
+            loadStudentMonthlySummary();
         } else {
             const error = await response.json();
             showToast(error.message || 'Error al aprobar pago', 'error');
@@ -376,6 +609,7 @@ async function rejectPayment(paymentId) {
             showToast('Pago rechazado', 'success');
             loadPendingPayments();
             loadStats();
+            loadStudentMonthlySummary();
         } else {
             const error = await response.json();
             showToast(error.message || 'Error al rechazar pago', 'error');

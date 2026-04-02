@@ -443,6 +443,89 @@
     font-weight: 600;
 }
 
+.dashboard-section {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+}
+
+.dashboard-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.summary-filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 170px;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.filter-group select {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.btn-view,
+.btn-approve,
+.btn-reject {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-view {
+    background: var(--primary-color);
+}
+
+.btn-approve {
+    background: var(--accent-color);
+}
+
+.btn-reject {
+    background: var(--danger-color);
+}
+
 /* Table */
 .table-container {
     overflow-x: auto;
@@ -735,6 +818,22 @@ tr:hover {
         color: var(--primary-color);
         padding-bottom: 12px;
         border-bottom: 2px solid #e0e7ff;
+    }
+
+    .dashboard-section {
+        padding: 16px;
+        margin-bottom: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .summary-filters {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filter-group {
+        min-width: 100%;
     }
     
     /* Tablas con scroll horizontal */
