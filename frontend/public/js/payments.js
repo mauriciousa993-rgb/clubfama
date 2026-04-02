@@ -416,23 +416,32 @@ async function handlePaymentSubmit(e) {
 
 // Buscar pagos
 function searchPayments() {
-    const searchTerm = document.getElementById('searchPayment').value.toLowerCase();
-    const filtered = payments.filter(p => 
-        (p.playerName && p.playerName.toLowerCase().includes(searchTerm)) ||
-        (p.concept && p.concept.toLowerCase().includes(searchTerm))
-    );
-    renderPayments(filtered);
+    applyPaymentsFilters();
 }
 
 // Filtrar pagos
 function filterPayments() {
+    applyPaymentsFilters();
+}
+
+function applyPaymentsFilters() {
+    const searchTerm = (document.getElementById('searchPayment')?.value || '').toLowerCase().trim();
     const month = document.getElementById('monthFilter').value;
     const status = document.getElementById('statusFilter').value;
     
-    let filtered = payments;
+    let filtered = [...payments];
+
+    if (searchTerm) {
+        filtered = filtered.filter((p) => {
+            const playerName = (p.player_ref?.name || p.playerName || '').toLowerCase();
+            const concept = (p.concept || '').toLowerCase();
+            const monthText = normalizeMonthToSpanish(p.month_covered || getMonthName(p.month)).toLowerCase();
+            return playerName.includes(searchTerm) || concept.includes(searchTerm) || monthText.includes(searchTerm);
+        });
+    }
     
     if (month) {
-        filtered = filtered.filter(p => p.month === parseInt(month));
+        filtered = filtered.filter((p) => getPaymentMonthNumber(p) === parseInt(month, 10));
     }
     
     if (status) {
@@ -440,4 +449,27 @@ function filterPayments() {
     }
     
     renderPayments(filtered);
+}
+
+function getPaymentMonthNumber(payment) {
+    if (payment.month_covered) {
+        const englishMonth = normalizeMonthToEnglish(payment.month_covered);
+        const monthNumbers = {
+            January: 1,
+            February: 2,
+            March: 3,
+            April: 4,
+            May: 5,
+            June: 6,
+            July: 7,
+            August: 8,
+            September: 9,
+            October: 10,
+            November: 11,
+            December: 12
+        };
+        return monthNumbers[englishMonth] || null;
+    }
+
+    return Number(payment.month) || null;
 }

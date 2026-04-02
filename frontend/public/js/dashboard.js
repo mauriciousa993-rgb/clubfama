@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let studentMonthlySummaryRows = [];
+let defaultMonthlyPaymentsTotal = 0;
 
 // Inicializar menú móvil
 function initMobileMenu() {
@@ -140,6 +141,7 @@ async function loadStats() {
             });
             
             const totalMonthly = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            defaultMonthlyPaymentsTotal = totalMonthly;
             document.getElementById('monthlyPayments').textContent = formatCurrency(totalMonthly);
             
             // Calcular pagos pendientes
@@ -378,6 +380,13 @@ function renderStudentMonthlySummary() {
         return matchStudent && matchMonth && matchYear;
     });
 
+    syncMonthlyPaymentsCardWithFilters(
+        selectedStudent,
+        selectedMonth,
+        selectedYear,
+        filteredRows
+    );
+
     if (!filteredRows.length) {
         tbody.innerHTML = '';
         if (emptyText) {
@@ -402,6 +411,28 @@ function renderStudentMonthlySummary() {
     `).join('');
 
     if (emptyState) emptyState.style.display = 'none';
+}
+
+function syncMonthlyPaymentsCardWithFilters(selectedStudent, selectedMonth, selectedYear, filteredRows) {
+    const monthlyPaymentsEl = document.getElementById('monthlyPayments');
+    if (!monthlyPaymentsEl) return;
+
+    const isDefaultView =
+        selectedStudent === 'all' &&
+        selectedMonth === 'all' &&
+        selectedYear === 'all';
+
+    if (isDefaultView) {
+        monthlyPaymentsEl.textContent = formatCurrency(defaultMonthlyPaymentsTotal);
+        return;
+    }
+
+    // Si el usuario usa filtros (sobre todo mes), reflejamos ese total arriba.
+    const filteredApprovedTotal = filteredRows.reduce(
+        (sum, row) => sum + (Number(row.approvedTotal) || 0),
+        0
+    );
+    monthlyPaymentsEl.textContent = formatCurrency(filteredApprovedTotal);
 }
 
 // Cargar próximos eventos desde API (sincronizados entre todos los dispositivos)
