@@ -364,6 +364,21 @@
                 </button>
             </div>
 
+            <!-- Control de Pagos Mensual -->
+            <div class="monthly-payment-section">
+                <h3><i class="fas fa-calendar-check"></i> Control de Pagos Mensual</h3>
+                <div class="monthly-year-filter">
+                    <label for="paymentYear">Año:</label>
+                    <select id="paymentYear" onchange="renderMonthlyTable()"></select>
+                </div>
+                <div class="monthly-summary-stats" id="monthlySummaryStats"></div>
+                <div class="monthly-payments-grid" id="monthlyPaymentsGrid">
+                    <p style="grid-column:1/-1;text-align:center;color:#9ca3af;">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando pagos...
+                    </p>
+                </div>
+            </div>
+
             <div id="message" class="message" style="margin-top: 20px;"></div>
         </main>
     </div>
@@ -584,10 +599,123 @@
             day: 'numeric'
         });
 
+        // ── Control de pagos mensual ──────────────────────────────────
+        let allMyPayments = [];
+
+        const MONTHS = [
+            { key: 'January',   label: 'Enero' },
+            { key: 'February',  label: 'Febrero' },
+            { key: 'March',     label: 'Marzo' },
+            { key: 'April',     label: 'Abril' },
+            { key: 'May',       label: 'Mayo' },
+            { key: 'June',      label: 'Junio' },
+            { key: 'July',      label: 'Julio' },
+            { key: 'August',    label: 'Agosto' },
+            { key: 'September', label: 'Septiembre' },
+            { key: 'October',   label: 'Octubre' },
+            { key: 'November',  label: 'Noviembre' },
+            { key: 'December',  label: 'Diciembre' }
+        ];
+
+        async function loadMonthlyPayments() {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_URL}/payments/my-payments`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error();
+                allMyPayments = await res.json();
+
+                // Poblar selector de año
+                const years = [...new Set(allMyPayments.map(p => new Date(p.date_uploaded).getFullYear()))];
+                const currentYear = new Date().getFullYear();
+                if (!years.includes(currentYear)) years.push(currentYear);
+                years.sort((a, b) => b - a);
+
+                const sel = document.getElementById('paymentYear');
+                sel.innerHTML = years.map(y =>
+                    `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`
+                ).join('');
+
+                renderMonthlyTable();
+            } catch {
+                document.getElementById('monthlyPaymentsGrid').innerHTML =
+                    '<p style="grid-column:1/-1;text-align:center;color:#ef4444;">Error al cargar pagos.</p>';
+            }
+        }
+
+        function renderMonthlyTable() {
+            const year = parseInt(document.getElementById('paymentYear').value);
+            const now = new Date();
+            const currentMonthIdx = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const yearPayments = allMyPayments.filter(p =>
+                new Date(p.date_uploaded).getFullYear() === year
+            );
+
+            let paid = 0, pending = 0, rejected = 0, totalAmount = 0;
+
+            const gridHtml = MONTHS.map((month, idx) => {
+                const mp = yearPayments.filter(p => p.month_covered === month.key);
+
+                let cls = 'month-none', icon = 'fa-minus', lbl = 'Sin pago', amount = null;
+
+                if (mp.length > 0) {
+                    const aprov = mp.find(p => p.status === 'approved');
+                    const pend  = mp.find(p => p.status === 'pending');
+                    if (aprov) {
+                        cls = 'month-approved'; icon = 'fa-check-circle'; lbl = 'Pagado';
+                        amount = aprov.amount; paid++; totalAmount += aprov.amount;
+                    } else if (pend) {
+                        cls = 'month-pending'; icon = 'fa-clock'; lbl = 'En revisión';
+                        amount = pend.amount; pending++;
+                    } else {
+                        cls = 'month-rejected'; icon = 'fa-times-circle'; lbl = 'Rechazado';
+                        amount = mp[0].amount; rejected++;
+                    }
+                }
+
+                const isCurrent = idx === currentMonthIdx && year === currentYear;
+                return `
+                    <div class="month-card ${cls}${isCurrent ? ' current-month' : ''}">
+                        <div class="month-name">${month.label}</div>
+                        <i class="fas ${icon} month-status-icon"></i>
+                        <div class="month-status-label">${lbl}</div>
+                        ${amount ? `<div class="month-amount">$${amount.toLocaleString()}</div>` : ''}
+                    </div>`;
+            }).join('');
+
+            document.getElementById('monthlyPaymentsGrid').innerHTML = gridHtml;
+
+            document.getElementById('monthlySummaryStats').innerHTML = `
+                <div class="monthly-stat-box">
+                    <div class="stat-num green">${paid}</div>
+                    <div class="stat-lbl">Pagados</div>
+                </div>
+                <div class="monthly-stat-box">
+                    <div class="stat-num yellow">${pending}</div>
+                    <div class="stat-lbl">En revisión</div>
+                </div>
+                <div class="monthly-stat-box">
+                    <div class="stat-num red">${rejected}</div>
+                    <div class="stat-lbl">Rechazados</div>
+                </div>
+                <div class="monthly-stat-box">
+                    <div class="stat-num">${12 - paid - pending - rejected}</div>
+                    <div class="stat-lbl">Sin pago</div>
+                </div>
+                <div class="monthly-stat-box">
+                    <div class="stat-num" style="font-size:1rem;">$${totalAmount.toLocaleString()}</div>
+                    <div class="stat-lbl">Total aprobado</div>
+                </div>`;
+        }
+
         // Cargar perfil al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             initMobileMenu();
             loadProfile();
+            loadMonthlyPayments();
         });
 
     </script>

@@ -8,7 +8,8 @@ const {
   getPendingPayments,
   updatePaymentStatus,
   getAllPayments,
-  deletePayment
+  deletePayment,
+  getPlayerPayments
 } = require('../controllers/paymentController');
 
 // Rutas para jugadores
@@ -17,6 +18,7 @@ router.get('/my-payments', protect, getMyPayments);
 
 // Rutas para administradores
 router.get('/pending', protect, adminOnly, getPendingPayments);
+router.get('/player/:playerId', protect, adminOnly, getPlayerPayments);
 router.get('/', protect, adminOnly, getAllPayments);
 router.put('/:id/status', protect, adminOnly, updatePaymentStatus);
 router.delete('/:id', protect, adminOnly, deletePayment);

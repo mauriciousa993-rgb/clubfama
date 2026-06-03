@@ -191,6 +191,21 @@ const getAllPayments = async (req, res) => {
   }
 };
 
+// @desc    Obtener pagos de un jugador específico (Admin)
+// @route   GET /api/payments/player/:playerId
+// @access  Private (Admin)
+const getPlayerPayments = async (req, res) => {
+  try {
+    const payments = await Payment.find({ player_ref: req.params.playerId })
+      .sort({ date_uploaded: -1 });
+
+    res.json(payments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener los pagos del jugador' });
+  }
+};
+
 // @desc    Eliminar pago (Admin)
 // @route   DELETE /api/payments/:id
 // @access  Private (Admin)
@@ -217,5 +232,6 @@ module.exports = {
   getPendingPayments,
   updatePaymentStatus,
   getAllPayments,
-  deletePayment
+  deletePayment,
+  getPlayerPayments
 };

@@ -142,14 +142,82 @@ function closePlayerModal() {
     document.getElementById('playerModal').classList.remove('active');
 }
 
+// Meses para tabla mensual
+const MONTHS_MAP = [
+    { key: 'January',   label: 'Enero' },
+    { key: 'February',  label: 'Febrero' },
+    { key: 'March',     label: 'Marzo' },
+    { key: 'April',     label: 'Abril' },
+    { key: 'May',       label: 'Mayo' },
+    { key: 'June',      label: 'Junio' },
+    { key: 'July',      label: 'Julio' },
+    { key: 'August',    label: 'Agosto' },
+    { key: 'September', label: 'Septiembre' },
+    { key: 'October',   label: 'Octubre' },
+    { key: 'November',  label: 'Noviembre' },
+    { key: 'December',  label: 'Diciembre' }
+];
+
+function buildMonthlyGrid(payments, year) {
+    const now = new Date();
+    const currentMonthIdx = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const yearPayments = payments.filter(p =>
+        new Date(p.date_uploaded).getFullYear() === year
+    );
+
+    let paid = 0, pending = 0, rejected = 0, totalAmount = 0;
+
+    const gridHtml = MONTHS_MAP.map((month, idx) => {
+        const mp = yearPayments.filter(p => p.month_covered === month.key);
+        let cls = 'month-none', icon = 'fa-minus', lbl = 'Sin pago', amount = null;
+
+        if (mp.length > 0) {
+            const aprov = mp.find(p => p.status === 'approved');
+            const pend  = mp.find(p => p.status === 'pending');
+            if (aprov) {
+                cls = 'month-approved'; icon = 'fa-check-circle'; lbl = 'Pagado';
+                amount = aprov.amount; paid++; totalAmount += aprov.amount;
+            } else if (pend) {
+                cls = 'month-pending'; icon = 'fa-clock'; lbl = 'En revisión';
+                amount = pend.amount; pending++;
+            } else {
+                cls = 'month-rejected'; icon = 'fa-times-circle'; lbl = 'Rechazado';
+                amount = mp[0].amount; rejected++;
+            }
+        }
+
+        const isCurrent = idx === currentMonthIdx && year === currentYear;
+        return `
+            <div class="month-card ${cls}${isCurrent ? ' current-month' : ''}">
+                <div class="month-name">${month.label}</div>
+                <i class="fas ${icon} month-status-icon"></i>
+                <div class="month-status-label">${lbl}</div>
+                ${amount ? `<div class="month-amount">$${amount.toLocaleString()}</div>` : ''}
+            </div>`;
+    }).join('');
+
+    const summaryHtml = `
+        <div class="monthly-summary-stats">
+            <div class="monthly-stat-box"><div class="stat-num green">${paid}</div><div class="stat-lbl">Pagados</div></div>
+            <div class="monthly-stat-box"><div class="stat-num yellow">${pending}</div><div class="stat-lbl">En revisión</div></div>
+            <div class="monthly-stat-box"><div class="stat-num red">${rejected}</div><div class="stat-lbl">Rechazados</div></div>
+            <div class="monthly-stat-box"><div class="stat-num">${12 - paid - pending - rejected}</div><div class="stat-lbl">Sin pago</div></div>
+            <div class="monthly-stat-box"><div class="stat-num" style="font-size:1rem;">$${totalAmount.toLocaleString()}</div><div class="stat-lbl">Total aprobado</div></div>
+        </div>`;
+
+    return { gridHtml, summaryHtml };
+}
+
 // Ver jugador - Mostrar información completa
-function viewPlayer(id) {
+async function viewPlayer(id) {
     const player = players.find(p => p._id === id);
     if (!player) return;
-    
+
     const content = document.getElementById('viewPlayerContent');
     const modalTitle = document.getElementById('viewModalTitle');
-    
+
     modalTitle.innerHTML = `<i class="fas fa-user"></i> ${player.name}`;
     
     // Formatear fechas
@@ -326,10 +394,65 @@ function viewPlayer(id) {
                     </div>
                 </div>
             </div>
+
+            <!-- Control de Pagos Mensual -->
+            <div class="monthly-payment-section">
+                <h3><i class="fas fa-calendar-check"></i> Control de Pagos Mensual</h3>
+                <div class="monthly-year-filter">
+                    <label>Año:</label>
+                    <select id="adminPaymentYear" onchange="refreshAdminMonthlyTable()">
+                        <option value="${new Date().getFullYear()}">${new Date().getFullYear()}</option>
+                    </select>
+                </div>
+                <div id="adminMonthlySummary"></div>
+                <div class="monthly-payments-grid" id="adminMonthlyGrid">
+                    <p style="grid-column:1/-1;text-align:center;color:#9ca3af;">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando pagos...
+                    </p>
+                </div>
+            </div>
         </div>
     `;
-    
+
     document.getElementById('viewPlayerModal').classList.add('active');
+
+    // Cargar pagos del jugador
+    try {
+        const res = await fetch(`${API_URL}/payments/player/${player._id}`, {
+            headers: getAuthHeaders()
+        });
+        const playerPayments = res.ok ? await res.json() : [];
+
+        // Poblar años disponibles
+        const years = [...new Set(playerPayments.map(p => new Date(p.date_uploaded).getFullYear()))];
+        const currentYear = new Date().getFullYear();
+        if (!years.includes(currentYear)) years.push(currentYear);
+        years.sort((a, b) => b - a);
+
+        const sel = document.getElementById('adminPaymentYear');
+        if (sel) {
+            sel.innerHTML = years.map(y =>
+                `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`
+            ).join('');
+
+            // Guardar pagos en dataset para acceso en onChange
+            sel.dataset.payments = JSON.stringify(playerPayments);
+            refreshAdminMonthlyTable();
+        }
+    } catch {
+        const grid = document.getElementById('adminMonthlyGrid');
+        if (grid) grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#ef4444;">Error al cargar pagos.</p>';
+    }
+}
+
+function refreshAdminMonthlyTable() {
+    const sel = document.getElementById('adminPaymentYear');
+    if (!sel) return;
+    const payments = JSON.parse(sel.dataset.payments || '[]');
+    const year = parseInt(sel.value);
+    const { gridHtml, summaryHtml } = buildMonthlyGrid(payments, year);
+    document.getElementById('adminMonthlySummary').innerHTML = summaryHtml;
+    document.getElementById('adminMonthlyGrid').innerHTML = gridHtml;
 }
 
 // Cerrar modal de ver jugador

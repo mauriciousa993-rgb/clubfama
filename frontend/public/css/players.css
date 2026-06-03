@@ -584,8 +584,182 @@
     .player-actions button {
         transition: none !important;
     }
-    
+
     .player-card:hover {
         transform: none !important;
+    }
+}
+
+/* ============================
+   Control de Pagos Mensual
+   ============================ */
+.monthly-payment-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 30px;
+}
+
+.monthly-payment-section h3 {
+    color: #1e40af;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #1e40af;
+    padding-bottom: 10px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.monthly-year-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.monthly-year-filter label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.monthly-year-filter select {
+    padding: 6px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    cursor: pointer;
+    color: #374151;
+}
+
+.monthly-summary-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.monthly-stat-box {
+    flex: 1;
+    min-width: 90px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.monthly-stat-box .stat-num {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1e40af;
+    line-height: 1;
+}
+
+.monthly-stat-box .stat-num.green { color: #15803d; }
+.monthly-stat-box .stat-num.yellow { color: #b45309; }
+.monthly-stat-box .stat-num.red { color: #b91c1c; }
+
+.monthly-stat-box .stat-lbl {
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-top: 3px;
+}
+
+.monthly-payments-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.month-card {
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    border: 2px solid #e5e7eb;
+    background: #f9fafb;
+    transition: transform 0.15s ease;
+    cursor: default;
+}
+
+.month-card:hover {
+    transform: translateY(-2px);
+}
+
+.month-card.current-month {
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.25);
+    border-color: #1e40af;
+}
+
+.month-card.month-approved {
+    background: #f0fdf4;
+    border-color: #22c55e;
+}
+
+.month-card.month-pending {
+    background: #fffbeb;
+    border-color: #f59e0b;
+}
+
+.month-card.month-rejected {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
+
+.month-name {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.month-status-icon {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.month-card.month-approved .month-status-icon { color: #22c55e; }
+.month-card.month-pending .month-status-icon { color: #f59e0b; }
+.month-card.month-rejected .month-status-icon { color: #ef4444; }
+.month-card.month-none .month-status-icon { color: #d1d5db; }
+
+.month-status-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.month-card.month-approved .month-status-label { color: #15803d; }
+.month-card.month-pending .month-status-label { color: #b45309; }
+.month-card.month-rejected .month-status-label { color: #b91c1c; }
+.month-card.month-none .month-status-label { color: #9ca3af; }
+
+.month-amount {
+    font-size: 0.68rem;
+    color: #374151;
+    margin-top: 4px;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .monthly-payments-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .month-card {
+        padding: 10px 6px;
+    }
+    .monthly-summary-stats {
+        gap: 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    .monthly-payments-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
